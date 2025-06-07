@@ -15,6 +15,6 @@ Page setup
 </p>
 
 <p>
-  <div id="str"> str</div>
+  <div id = "str"> str</div>
 </p>
 </html>
