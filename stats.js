@@ -1,6 +1,6 @@
 str = 10;
 
-function findstr {
+function findstr() {
   strength +=1;
   document.getElementById("str").InnerHTML = strength; 
 }
