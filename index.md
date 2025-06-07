@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+<html>
 <script src="stats.js"></script>
 
 
@@ -16,3 +17,4 @@ Page setup
 <p>
   <div id="str"> str</div>
 </p>
+</html>
