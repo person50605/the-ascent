@@ -1,4 +1,4 @@
-str = 10;
+strength = 10;
 
 function findstr() {
   strength +=1;
