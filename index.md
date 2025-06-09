@@ -19,7 +19,7 @@ Page setup
 </p>
 
 
-
+</html>
 
 function startGame() {
   myGamePiece = new component(30, 30, "red", 10, 120);
@@ -41,4 +41,4 @@ var myGameArea = {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
-</html>
+
