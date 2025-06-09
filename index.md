@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html>
-<script src="stats.js"></script>
+<script src="stats.js"> hello</script>
 
 
 <!--
