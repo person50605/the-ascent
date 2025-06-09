@@ -36,7 +36,7 @@ findstr();
 startGame();
 
 var slime = new Image;
-slime.src = "https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png"
+slime.src = "https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png";
 var hi = "hi";
 
 
