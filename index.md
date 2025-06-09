@@ -11,7 +11,7 @@ Page setup
 <head>The Ascent</head>
 <p>
 
-  <button onclick="findstr()"> click me </button>
+  <button onclick="startGame()"> click me </button>
 </p>
 
 <p>
