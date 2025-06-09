@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html>
-<script src="stats.js"> hello</script>
 
 
 <!--
@@ -47,6 +46,7 @@ Page setup
   };
   
 </script>
+<script src="stats.js"> hello</script>
 
 
 </html>
