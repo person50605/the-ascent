@@ -17,7 +17,9 @@ Page setup
   <div id = "str"> str</div>
 </p>
 
-<p onload = begin()></p>
+<p onload = begin()>
+  hello
+</p>
 
 <script>
   function begin() {
