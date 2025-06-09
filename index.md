@@ -18,6 +18,13 @@ Page setup
   <div id = "str"> str</div>
 </p>
 
+<script>
+  window.onload = startgame() {
+    var Inv = ["error","sword"];
+  };
+  
+</script>
+
 
 </html>
 
