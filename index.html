@@ -6,33 +6,33 @@
 <!--
 Page setup
 -->
+<script src="stats.js"> hello</script>
 
 <head>The Ascent</head>
 <p>
 
-  <button onclick="startGame()"> click me </button>
+  <button onclick="findstr()"> click me </button>
 </p>
-
+    
 <p>
-  <div id = "str"> str</div>
+  <div id = "str" onclick = "change()"> str </div>
 </p>
 
+    <div
+
+<p> whitespace
+
+more whitespace</p>
+    hihi
 <p onload = begin()>
   hello
 </p>
 
 <script>
-  function begin() {
-    var act = 10;
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    setTimeout(function () {
-                document.getElementById('message').innerHTML =
-                    'The page has finished loading! After 5 second';
-            }, 5000); 
+function change() {
+  document.getElementById("str").innerHTML = "I have changed!";
+}
 </script>
-
 
 
 <script>
@@ -48,7 +48,6 @@ Page setup
   };
   
 </script>
-<script src="stats.js"></script>
 
 
 </html>
