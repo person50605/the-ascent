@@ -2,12 +2,13 @@
 
 
 
-
+var strength = 10;
+findstr();
 
 function findstr() {
-  var strength = 10;
+
   strength +=1;
-  document.getElementById("str").InnerHTML = "strength"; 
+  document.getElementById("str").InnerHTML = strength; 
 }
 
 
