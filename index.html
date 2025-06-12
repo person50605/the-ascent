@@ -3,64 +3,34 @@
 <html>
 
 
-<!-- Page setup -->
-<script src="stats.js"> hello</script>
 
-<head>The Ascent</head>
-<p>
-
-  <button onclick="findstr()"> click me </button>
-  <button onclick="change()"> change </button>
-</p>
-    
-<p>
-  <div id="str" onclick="change()"> str </div>
-  <div id="mousex"> str </div>
-  <div id="mousey"> str </div>
-  <div id="mouseh"> str </div>
-</p>
-
-
-<div id="x"> hi</div>
-<div id="y"> hello</div>
-
-<!-- Inventory drawing -->
-<canvas id="inventory" height="300" width="450" 
-style="border:1px solid #000000;position:fixed;left:0px;top:200px">
-
-    <script>
-    var c = document.getElementById("inventory");
-    var ctx = c.getContext("2d");
-    //"dimensions"
-    let d = 30;
-    //"border"
-    let b = 4;
-    ctx.font = "10px Arial";
-  for (n=0; n<6; n++){
-    for (i=0; i<10; i++) {
-      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
-      ctx.fillText("10", (b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
-      ctx.stroke();
-    }
-  }
-</script>
-
-
-</canvas>
-
-
+<!-- functions and vars -->
 <script>
+//vars
+
+
+//inventory
+inv = ["error","sword","shield"];
+//quantities of items in inventory
+inv_q = ["error",1,2];
+
+//item templates
+items_names = ["error",
+"sword",
+"shield"];
+items_desc = ["error",
+"A wooden sword",
+"A small buckler"
+];
+
+strength = 1;
+
   
-//declare globals
-var inv = [2,2,2];
-var strength = 1;
+  
   
   
 //declare functions
+
 
 function change() {
   document.getElementById("str").innerHTML = "I have changed!";
@@ -103,7 +73,68 @@ addEventListener("mouseleave", updateMousePos);
 addEventListener("click", activateButton);
 
 
-    </script>
+</script>
+
+
+
+
+
+
+<!-- Page setup -->
+<head>The Ascent</head>
+<p>
+
+  <button onclick="findstr()"> click me </button>
+  <button onclick="change()"> change </button>
+</p>
+    
+<p>
+  <div id="str" onclick="change()"> str </div>
+  <div id="mousex"> str </div>
+  <div id="mousey"> str </div>
+  <div id="mouseh"> str </div>
+</p>
+
+
+<div id="x"> hi</div>
+<div id="y"> hello</div>
+
+<!-- Inventory drawing -->
+<canvas id="inventory" height="300" width="450" 
+style="border:1px solid #000000;position:fixed;left:0px;top:200px">
+
+    <script>
+    
+
+    var c = document.getElementById("inventory");
+    var ctx = c.getContext("2d");
+    //"dimensions"
+    let d = 30;
+    //"border"
+    let b = 4;
+    ctx.font = "10px Arial";
+  for (n=0; n<6; n++){
+    for (i=0; i<10; i++) {
+      //draw the boxes
+      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
+      //add the item quantity
+      if (inv_q[n*10+i+1] != undefined) {
+      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      }
+      ctx.stroke();
+    }
+  }
+</script>
+
+
+</canvas>
+
+
+
 
 
 
