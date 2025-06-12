@@ -3,96 +3,108 @@
 <html>
 
 
-<!--
-Page setup
--->
+<!-- Page setup -->
 <script src="stats.js"> hello</script>
 
 <head>The Ascent</head>
 <p>
 
   <button onclick="findstr()"> click me </button>
+  <button onclick="change()"> change </button>
 </p>
     
 <p>
-  <div id = "str" onclick = "change()"> str </div>
-  <div id = "message"> how long to load? </div>
+  <div id="str" onclick="change()"> str </div>
+  <div id="mousex"> str </div>
+  <div id="mousey"> str </div>
+  <div id="mouseh"> str </div>
 </p>
 
-    <div
 
-<p> whitespace
+<div id="x"> hi</div>
+<div id="y"> hello</div>
 
-more whitespace</p>
-    hihi
-<p onload = begin()>
-  hello
-</p>
+<!-- Inventory drawing -->
+<canvas id="inventory" height="300" width="450" 
+style="border:1px solid #000000;position:fixed;left:0px;top:200px">
+
+    <script>
+    var c = document.getElementById("inventory");
+    var ctx = c.getContext("2d");
+    //"dimensions"
+    let d = 30;
+    //"border"
+    let b = 4;
+    ctx.font = "10px Arial";
+  for (n=0; n<6; n++){
+    for (i=0; i<10; i++) {
+      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
+      ctx.fillText("10", (b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      ctx.stroke();
+    }
+  }
+</script>
+
+
+</canvas>
+
 
 <script>
+  
+//declare globals
+var inv = [2,2,2];
+var strength = 1;
+  
+  
+//declare functions
+
 function change() {
   document.getElementById("str").innerHTML = "I have changed!";
 }
-</script>
-
-
-<script>
-  window.onload = startgame() {
-    var Inv = ["error","sword"];
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    setTimeout(function () {
-                document.getElementById('message').innerHTML =
-                    'The page has finished loading! After 5 second';
-            }, 5000); 
-  };
-  
-</script>
-    <script>
-      
-
-
-
-
-var strength = 10;
-findstr();
 
 function findstr() {
-
   strength +=1;
-  document.getElementById("str").InnerHTML = strength; 
+  document.getElementById("str").innerHTML = strength;
 }
 
-
-function startGame() {
-  myGamePiece = new component(30, 30, "red", 10, 120);
-  myGamePiece.gravity = 0.05;
-  myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-  myGameArea.start();
-}
-
-var myGameArea = {
-  canvas : document.createElement("canvas"),
-  start : function() {
-    this.canvas.width = 480;
-    this.canvas.height = 270;
-    this.context = this.canvas.getContext("2d");
-    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-    this.frameNo = 0;
-  },
-  clear : function() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+function activateButton() {
+  var mx = document.getElementById("x").innerHTML;
+  var my = document.getElementById("y").innerHTML;
+  
+  if (mx<460 && mx>=b && my<500 && my>200) {
+    let d = 30;
+    let b = 4;
+    mx = Math.ceil((mx)/(b+d));
+    my = Math.ceil((my-200)/(b+d));
+    let hovering = (my-1)*10+mx;
+    document.getElementById("mousex").innerHTML = mx;
+    document.getElementById("mousey").innerHTML = my;
+    document.getElementById("mouseh").innerHTML = hovering
   }
 }
 
-findstr();
-startGame();
 
-var slime = new Image;
-slime.src = "https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png";
-var hi = "hi";
+
+//constant mouse tracking
+const pageX = document.getElementById("x");
+const pageY = document.getElementById("y");
+
+function updateMousePos(event) {
+  pageX.innerText = event.pageX;
+  pageY.innerText = event.pageY;
+}
+addEventListener("mousemove", updateMousePos);
+addEventListener("mouseenter", updateMousePos);
+addEventListener("mouseleave", updateMousePos);
+addEventListener("click", activateButton);
+
+
     </script>
 
-</html>
 
+
+</html>
