@@ -2,7 +2,11 @@
 <!DOCTYPE html>
 <html>
 
-
+<div id="x"> hi</div>
+<div id="y"> hello</div>
+<div id="mousex"> str </div>
+  <div id="mousey"> str </div>
+  <div id="mouseh"> str </div>
 
 <!-- functions and vars -->
 <script>
@@ -42,18 +46,75 @@ function findstr() {
 }
 
 function activateButton() {
-  var mx = document.getElementById("x").innerHTML;
-  var my = document.getElementById("y").innerHTML;
-  
-  if (mx<460 && mx>=b && my<500 && my>200) {
-    let d = 30;
-    let b = 4;
+  let mx = document.getElementById("x").innerHTML;
+  let my = document.getElementById("y").innerHTML;
+      let b = 4;
+      let d = 30;
+  if (mx<450 && mx>=b && my<650 && my>350) {
     mx = Math.ceil((mx)/(b+d));
-    my = Math.ceil((my-200)/(b+d));
+    my = Math.ceil((my-350)/(b+d));
     let hovering = (my-1)*10+mx;
+    if (inv_q[hovering] == undefined) {
+      inv_q[hovering] = 1;
+    } else {
+      inv_q[hovering] = inv_q[hovering] + 1;
+    }
     document.getElementById("mousex").innerHTML = mx;
     document.getElementById("mousey").innerHTML = my;
-    document.getElementById("mouseh").innerHTML = hovering
+    document.getElementById("mouseh").innerHTML = hovering;
+    drawinv(30,4,6,10);
+  }
+}
+
+function drawinv(d,b,h,w) {
+  //d is the size of the boxes
+  //b is the amount of space between boxes
+  //h is the height of the inventory (in boxes) (should be 4)
+  //w is the width of the inventory (in boxes) (should be 3)
+  var c = document.getElementById("inventory");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, 450, 300);
+  ctx.strokeStyle = "black";
+    ctx.font = "10px Arial";
+  //draw the inventory
+  for (n=0; n<h; n++) {
+    for (i=0; i<w; i++) {
+      //draw the boxes
+      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
+      //add the item quantity
+      if (inv_q[n*10+i+1] != undefined) {
+      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      }
+      ctx.stroke();
+    }
+  }
+}
+
+function draweq (d,b,h,w) {
+  var c = document.getElementById("eq");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, 275, 200);
+  ctx.strokeStyle = "black";
+  ctx.font = "10px Arial";
+  //draw the eq boxes
+  for (n=0; n<h; n++) {
+    for (i=0; i<w; i++) {
+      //draw the boxes
+      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
+      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
+      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
+      //add the item quantity
+      if (inv_q[n*10+i+1] != undefined) {
+      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      }
+      ctx.stroke();
+    }
   }
 }
 
@@ -67,10 +128,9 @@ function updateMousePos(event) {
   pageX.innerText = event.pageX;
   pageY.innerText = event.pageY;
 }
-addEventListener("mousemove", updateMousePos);
-addEventListener("mouseenter", updateMousePos);
-addEventListener("mouseleave", updateMousePos);
-addEventListener("click", activateButton);
+
+
+
 
 
 </script>
@@ -86,51 +146,46 @@ addEventListener("click", activateButton);
 
   <button onclick="findstr()"> click me </button>
   <button onclick="change()"> change </button>
+  <button onclick="drawinv()"> clear</button>
+
 </p>
     
 <p>
   <div id="str" onclick="change()"> str </div>
-  <div id="mousex"> str </div>
-  <div id="mousey"> str </div>
-  <div id="mouseh"> str </div>
+
 </p>
 
 
-<div id="x"> hi</div>
-<div id="y"> hello</div>
+
+
+<!-- Equipment drawing -->
+<canvas id="eq" height="275" width="200"
+style="border:1px solid #000000;position:fixed;left:10px;top:50px">
+  <script>
+  eq.addEventListener("mousemove", updateMousePos);
+  eq.addEventListener("mouseenter", updateMousePos);
+  eq.addEventListener("mouseleave", updateMousePos);
+  eq.addEventListener("click", activateButton);
+  var c = document.getElementById("eq");
+  var ctx = c.getContext("2d");
+  draweq(30,4,4,3);
+  </script>
+</canvas>
 
 <!-- Inventory drawing -->
 <canvas id="inventory" height="300" width="450" 
-style="border:1px solid #000000;position:fixed;left:0px;top:200px">
+style="border:1px solid #000000;position:fixed;left:0px;top:350px">
 
-    <script>
-    
-
+  <script>
+  inventory.addEventListener("mousemove", updateMousePos);
+  inventory.addEventListener("mouseenter", updateMousePos);
+  inventory.addEventListener("mouseleave", updateMousePos);
+  inventory.addEventListener("click", activateButton);
     var c = document.getElementById("inventory");
     var ctx = c.getContext("2d");
-    //"dimensions"
-    let d = 30;
-    //"border"
-    let b = 4;
-    ctx.font = "10px Arial";
-  for (n=0; n<6; n++){
-    for (i=0; i<10; i++) {
-      //draw the boxes
-      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
-      //add the item quantity
-      if (inv_q[n*10+i+1] != undefined) {
-      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
-      }
-      ctx.stroke();
-    }
-  }
-</script>
-
-
+    drawinv(30,4,6,10);
+  </script>
+  
 </canvas>
 
 
