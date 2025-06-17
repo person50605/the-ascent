@@ -2,29 +2,57 @@
 <!DOCTYPE html>
 <html>
 
+
+<!-- these divs are here to enable storing information between functions -->
 <div id="x"> hi</div>
 <div id="y"> hello</div>
-<div id="mousex"> str </div>
+<div id="mousex" style="font:20px Arial"> str </div>
   <div id="mousey"> str </div>
   <div id="mouseh"> str </div>
+  <div id="invlpad"></div>
+  <div id="invtpad"></div>
+  <div id="eqlpad"></div>
+  <div id="eqtpad"></div>
+  <div id="invlen"> wheeeee</div>
 
 <!-- functions and vars -->
 <script>
 //vars
 
+//I like my arrays to start at 1, so there's a placeholder "error" at the start of each one
 
 //inventory
-inv = ["error","sword","shield"];
-//quantities of items in inventory
-inv_q = ["error",1,2];
+inv = [ ["error"],
+//names`
+["error","sword","shield"],
+//quantities of the items
+["error",1,2],
+//modifications to the items (like xp or enchants)
+["error"]
+];
+
+
+//equpped items - 12 slots
+equipment = [["error"],
+//name
+["error","hi","me"],
+//modifications
+["error"]
+];
+
 
 //item templates
-items_names = ["error",
+items = [ ["error"],
+//names
+["error",
 "sword",
-"shield"];
-items_desc = ["error",
+"shield"],
+//descriptions
+["error",
 "A wooden sword",
 "A small buckler"
+]
+
 ];
 
 strength = 1;
@@ -48,22 +76,46 @@ function findstr() {
 function activateButton() {
   let mx = document.getElementById("x").innerHTML;
   let my = document.getElementById("y").innerHTML;
-      let b = 4;
-      let d = 30;
-  if (mx<450 && mx>=b && my<650 && my>350) {
-    mx = Math.ceil((mx)/(b+d));
-    my = Math.ceil((my-350)/(b+d));
-    let hovering = (my-1)*10+mx;
-    if (inv_q[hovering] == undefined) {
-      inv_q[hovering] = 1;
+  let hovering = 1;
+  let invlpad = document.getElementById("invlpad").innerHTML;
+  let invtpad = document.getElementById("invtpad").innerHTML;
+  let eqlpad = document.getElementById("eqlpad").innerHTML;
+  let eqtpad = document.getElementById("eqtpad").innerHTML;
+  let b = 4;
+  let d = 30;
+  //onclick logic
+  if (mx<=390 && mx>50 && my<550 && my>350) { //is the button in the inventory?
+    //switch mx & my units to boxes
+    mx = Math.ceil((mx-invlpad)/(b+d));
+    my = Math.ceil((my-350-invtpad)/(b+d));
+    hovering = (my-1)*10+mx;
+    if (inv [2] [hovering] == undefined) {
+      inv [2] [hovering] = 1;
     } else {
-      inv_q[hovering] = inv_q[hovering] + 1;
+      inv [2] [hovering]= inv [2] [hovering] + 1;
     }
+    document.getElementById("invlen").innerHTML = inv[2].length-1;
     document.getElementById("mousex").innerHTML = mx;
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
-    drawinv(30,4,6,10);
+  } else { if (mx<164 && mx>=63 && my<210 && my>74) { //is the button in the equipment area?
+    mx = Math.round((mx-eqlpad+b)/(b+d));
+    my = Math.ceil((my-50-eqtpad-b)/(b+d));
+    hovering = (my-1)*10+mx;
+    if (equipment [2] [hovering] == undefined) {
+      equipment [2] [hovering] = 1;
+    } else {
+      equipment [2] [hovering] = equipment [2] [hovering] + 1;
+    }
+    document.getElementById("invlen").innerHTML = inv[2].length-1;
+    document.getElementById("mousex").innerHTML = mx;
+    document.getElementById("mousey").innerHTML = my;
+    document.getElementById("mouseh").innerHTML = hovering;
   }
+  }
+
+    drawinv(30,4,6,10);
+    draweq(30,4,4,3);
 }
 
 function drawinv(d,b,h,w) {
@@ -73,21 +125,40 @@ function drawinv(d,b,h,w) {
   //w is the width of the inventory (in boxes) (should be 3)
   var c = document.getElementById("inventory");
   var ctx = c.getContext("2d");
+  let tpad = 0;
+  let lpad = 50;
+  document.getElementById("invtpad").innerHTML = tpad;
+  document.getElementById("invlpad").innerHTML = lpad;
   ctx.clearRect(0, 0, 450, 300);
   ctx.strokeStyle = "black";
-    ctx.font = "10px Arial";
+  ctx.font = "10px Arial";
+      ctx.moveTo(430, 64);
+      ctx.lineTo(400, 64);
+      ctx.lineTo(400, 94);
+      ctx.lineTo(430, 94);
+      ctx.lineTo(430, 64);
+      ctx.stroke();
+      ctx.moveTo(430, 144);
+      ctx.lineTo(400, 144);
+      ctx.lineTo(400, 114);
+      ctx.lineTo(430, 114);
+      ctx.lineTo(430, 144);
+      ctx.stroke();
   //draw the inventory
   for (n=0; n<h; n++) {
     for (i=0; i<w; i++) {
       //draw the boxes
-      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
+      ctx.moveTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
+      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*n+b+tpad);
+      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*(n+1)+tpad);
+      ctx.lineTo((b+d)*i+b+lpad, (b+d)*(n+1)+tpad);
+      ctx.lineTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
       //add the item quantity
-      if (inv_q[n*10+i+1] != undefined) {
-      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      if (inv [2] [n*10+i+1] != undefined) {
+      ctx.fillText(inv [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
+      }
+      if (inv [1] [n*10+i+1] != undefined) {
+      ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
     }
@@ -100,18 +171,27 @@ function draweq (d,b,h,w) {
   ctx.clearRect(0, 0, 275, 200);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
+  let tpad = 20;
+  let lpad = 50;
+  document.getElementById("eqtpad").innerHTML = tpad;
+  document.getElementById("eqlpad").innerHTML = lpad;
   //draw the eq boxes
   for (n=0; n<h; n++) {
     for (i=0; i<w; i++) {
       //draw the boxes
-      ctx.moveTo((b+d)*i+b, (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*n+b);
-      ctx.lineTo((b+d)*(i+1), (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*(n+1));
-      ctx.lineTo((b+d)*i+b, (b+d)*n+b);
-      //add the item quantity
-      if (inv_q[n*10+i+1] != undefined) {
-      ctx.fillText(inv_q[n*10+i+1],(b+d)*(i+1)-d+1, (b+d)*n+b+d-2);
+      ctx.moveTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
+      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*n+b+tpad);
+      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*(n+1)+tpad);
+      ctx.lineTo((b+d)*i+b+lpad, (b+d)*(n+1)+tpad);
+      ctx.lineTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
+      //add the item quantity (irrelevant here)
+      /**
+      if (equipment [2] [n*10+i+1] != undefined) {
+        ctx.fillText(equipment [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
+      }
+      **/
+      if (equipment [1] [n*10+i+1] != undefined) {
+        ctx.fillText(equipment [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
     }
