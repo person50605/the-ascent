@@ -14,6 +14,9 @@
   <div id="eqlpad"></div>
   <div id="eqtpad"></div>
   <div id="invlen"> wheeeee</div>
+  <div id="whei"> heheheha</div>
+  <div id="debug"> hihiih</div>
+  <div id="statuses"> helllo</div>
 
 <!-- functions and vars -->
 <script>
@@ -21,12 +24,27 @@
 
 //I like my arrays to start at 1, so there's a placeholder "error" at the start of each one
 
+
+//player statuses
+//hopefully I don't misspell "player_status" and have a "player_stats" list
+player_status = [ ["error"],
+//name
+["error","hpregen","strup","dblore"],
+//potency
+["error",0.5,10,1],
+//duration (remaining)
+["error",30,5,100]
+
+];
+
+
+
 //inventory
 inv = [ ["error"],
 //names`
-["error","sword","shield"],
+["error","sword","shield","bread"],
 //quantities of the items
-["error",1,2],
+["error",1,2,1000],
 //modifications to the items (like xp or enchants)
 ["error"]
 ];
@@ -35,7 +53,9 @@ inv = [ ["error"],
 //equpped items - 12 slots
 equipment = [["error"],
 //name
-["error","hi","me"],
+["error","cloak","helmet","neck","mainhand","body","offhand","ring","legs","ring","bag","feet","hands"],
+//quantity (useless, but here for consistency)
+["error",1,1,1,1,1,1,1,1,1,1,1,1],
 //modifications
 ["error"]
 ];
@@ -51,7 +71,78 @@ items = [ ["error"],
 ["error",
 "A wooden sword",
 "A small buckler"
+],
+
+];
+
+
+
+  /**   item tags    **/
+
+equippable_tags = [ ["error"],
+//cloak
+["error",
+"ratskin cloak"
+],
+//helmets
+["error",
+"iron helmet",
+"leather helmet"
+],
+//neck items
+["error",
+"silver necklace",
+"gold necklace"
+],
+//mainhand items (usually weapons)
+["error",
+"sword",
+"pickaxe"
+],
+//body armour
+["error",
+"plate armour",
+"leather armour"
+],
+//offhand
+["error",
+"shield",
+"tower shield"
+],
+//rings (two slots)
+["error",
+"wooden ring",
+"iron ring"
+],
+//legs
+["error",
+"pants",
+"jeans"
+],
+//bags (should increase quickslots)
+["error",
+"small pouch",
+"bag of holding"
+],
+//feet
+["error",
+"swiftfoot boots",
+"lightning greaves"
+],
+//hands (like gloves)
+["error",
+"gloves",
+"gauntlets"
 ]
+
+];
+
+
+comestible_tags = [ ["error"],
+//names
+["error","bread"],
+//efects (effect:potency,duration) (effects are seperated by a dash (-))
+["error","hpregen:0.5,30"]
 
 ];
 
@@ -73,6 +164,25 @@ function findstr() {
   document.getElementById("str").innerHTML = strength;
 }
 
+
+function tick() {
+
+
+  //decrease all statuses by one
+  player_status[3]=player_status[3].map((i)=>i-1)
+  for (i=1;i<player_status[3].length;i++) {
+    if (player_status[3][i] <= 0) {
+      player_status[1].splice(i,1);
+      player_status[2].splice(i,1);
+      player_status[3].splice(i,1);
+      //recalculate stats here (preferably through calling a function)
+    }
+  }
+  strength +=1;
+  document.getElementById("statuses").innerHTML = player_status[3];
+  setTimeout(tick, 1000); //repeat the function
+}
+
 function activateButton() {
   let mx = document.getElementById("x").innerHTML;
   let my = document.getElementById("y").innerHTML;
@@ -81,27 +191,130 @@ function activateButton() {
   let invtpad = document.getElementById("invtpad").innerHTML;
   let eqlpad = document.getElementById("eqlpad").innerHTML;
   let eqtpad = document.getElementById("eqtpad").innerHTML;
+  //let invlength = document.getElementById("invlen")
   let b = 4;
   let d = 30;
   //onclick logic
+  //TODO: make the inventory scroll buttons work
   if (mx<=390 && mx>50 && my<550 && my>350) { //is the button in the inventory?
     //switch mx & my units to boxes
     mx = Math.ceil((mx-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
-    if (inv [2] [hovering] == undefined) {
-      inv [2] [hovering] = 1;
-    } else {
-      inv [2] [hovering]= inv [2] [hovering] + 1;
+    let eq_slot = false;
+    let inv_slot = false;
+    if (inv [2] [hovering] != undefined) {
+        //code for equipping items
+        if (equippable_tags.some(m=>m.includes(inv [1] [hovering]))) { //is the item equippable?
+          //document.getElementById("debug").innerHTML = equippable_tags.some(m=>m.includes(inv [1] [hovering]));
+
+          for (let i=1;i<=12; i++) { //which slot does the item go in? 
+            
+            if (equippable_tags[i].includes(inv [1] [hovering])) {
+              eq_slot = i;
+              break;
+            }
+          
+          }
+          //TODO: make this work with rings
+          if (equipment[1][eq_slot] != undefined) { //is there an item equipped in the slot?
+            //adds the equipped item to the inventory
+            if (equipment[3][eq_slot] != undefined) { //is the equipped item modified?
+              //if so, just add the item in a new slot
+              inv [1][inv[1].length+1] = equipment[1][eq_slot];
+              
+            } else if (inv[1].includes(equipment[1][eq_slot])) { //otherwise, does the inventory contain a copy of the item?
+              for (let i=1;i<inv[1].length;i++){ //if so, which slot is it in?
+                if (inv[1][i] == equipment[1][eq_slot]) {
+                  inv_slot = i;
+                  break;
+                }
+              }
+              inv[2][inv_slot]+=1;
+            }
+           
+          }
+            inv[2][hovering] -= 1;
+            equipment [1][eq_slot] = inv[1][hovering];
+            equipment[3][eq_slot] = inv[3][hovering];
+            
+            if (inv[2][hovering] <= 0) { //delete so the inventory looks pretty
+              inv[1].splice(hovering,1);
+              inv[2].splice(hovering,1);
+              inv[3].splice(hovering,1);            
+            }
+            
+        
+        } 
+        else if (comestible_tags.some(m=>m.includes(inv[1][hovering]))) {//can it be eaten?
+          //remove the item
+          inv[2][hovering] -= 1;
+          let eat_effect = 0;
+          for (let i = 1;i<comestible_tags[1].length;i++) { //find the effects of the item eaten as a raw string
+            if (comestible_tags[1][i] == inv[1][hovering]) {
+              eat_effect = comestible_tags[2][i]
+              
+              break;
+            }
+          }
+          
+          
+          if (eat_effect != 0) { //is there an effect for this?
+            let on_num = 0;
+            let nom = "";
+            
+            for (let m = 0; eat_effect[on_num] != undefined && m <= 2; m++) {
+              
+              
+              for (let i = 0; eat_effect[i] != ":"; i++) {//read the effects
+                nom = nom + eat_effect[i]
+                on_num = i
+                
+              }
+              on_num++
+              player_status[1].push(nom);
+              nom = "";
+              
+              for (let i = on_num; eat_effect[i] != ","; i++) {//read the potency
+                nom = nom + eat_effect[i]
+                on_num = i
+              }
+              on_num += 2;
+              player_status[2].push(nom);
+              nom = "";
+              
+              for (let i = on_num; eat_effect[i] != "-" && eat_effect[i] != undefined; i++) {//read the duration
+                nom = nom + eat_effect[i]
+                on_num = i
+              }
+              on_num++
+              player_status[3].push(nom);
+              nom = "";
+              
+            }
+            
+          }
+          
+          
+          if (inv[2][hovering] <= 0) { //delete so the inventory looks pretty
+              inv[1].splice(hovering,1);
+              inv[2].splice(hovering,1);
+              inv[3].splice(hovering,1);    
+          }
+
+        }
     }
+      
+      
+    //update the data
     document.getElementById("invlen").innerHTML = inv[2].length-1;
     document.getElementById("mousex").innerHTML = mx;
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
-  } else { if (mx<164 && mx>=63 && my<210 && my>74) { //is the button in the equipment area?
+  } else if (mx<164 && mx>=63 && my<210 && my>74) { //is the button in the equipment area?
     mx = Math.round((mx-eqlpad+b)/(b+d));
     my = Math.ceil((my-50-eqtpad-b)/(b+d));
-    hovering = (my-1)*10+mx;
+    hovering = (my-1)*3+mx;
     if (equipment [2] [hovering] == undefined) {
       equipment [2] [hovering] = 1;
     } else {
@@ -112,8 +325,6 @@ function activateButton() {
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
   }
-  }
-
     drawinv(30,4,6,10);
     draweq(30,4,4,3);
 }
@@ -132,17 +343,31 @@ function drawinv(d,b,h,w) {
   ctx.clearRect(0, 0, 450, 300);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
+      //draw the buttons for scrolling
+      //TODO: space the buttons correctly and make the arrows have the same dimensions
+      //up button
       ctx.moveTo(430, 64);
       ctx.lineTo(400, 64);
       ctx.lineTo(400, 94);
       ctx.lineTo(430, 94);
       ctx.lineTo(430, 64);
       ctx.stroke();
+      ctx.moveTo(415, 71);
+      ctx.lineTo(425, 87);
+      ctx.lineTo(405, 87);
+      ctx.lineTo(415, 71);
+      ctx.stroke();
+      //down button
       ctx.moveTo(430, 144);
       ctx.lineTo(400, 144);
       ctx.lineTo(400, 114);
       ctx.lineTo(430, 114);
       ctx.lineTo(430, 144);
+      ctx.stroke();
+      ctx.moveTo(415, 137);
+      ctx.lineTo(425, 120);
+      ctx.lineTo(405, 120);
+      ctx.lineTo(415, 137);
       ctx.stroke();
   //draw the inventory
   for (n=0; n<h; n++) {
@@ -157,6 +382,8 @@ function drawinv(d,b,h,w) {
       if (inv [2] [n*10+i+1] != undefined) {
       ctx.fillText(inv [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
       }
+      //add the item name
+      //TODO: make this code load an image instead of text
       if (inv [1] [n*10+i+1] != undefined) {
       ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
@@ -176,8 +403,8 @@ function draweq (d,b,h,w) {
   document.getElementById("eqtpad").innerHTML = tpad;
   document.getElementById("eqlpad").innerHTML = lpad;
   //draw the eq boxes
-  for (n=0; n<h; n++) {
-    for (i=0; i<w; i++) {
+  for (let n=0; n<h; n++) {
+    for (let i=0; i<w; i++) {
       //draw the boxes
       ctx.moveTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
       ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*n+b+tpad);
@@ -190,8 +417,8 @@ function draweq (d,b,h,w) {
         ctx.fillText(equipment [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
       }
       **/
-      if (equipment [1] [n*10+i+1] != undefined) {
-        ctx.fillText(equipment [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
+      if (equipment [1] [n*3+i+1] != undefined) {
+        ctx.fillText(equipment [1] [n*3+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
     }
@@ -249,6 +476,7 @@ style="border:1px solid #000000;position:fixed;left:10px;top:50px">
   var c = document.getElementById("eq");
   var ctx = c.getContext("2d");
   draweq(30,4,4,3);
+  tick();
   </script>
 </canvas>
 
@@ -267,8 +495,6 @@ style="border:1px solid #000000;position:fixed;left:0px;top:350px">
   </script>
   
 </canvas>
-
-
 
 
 
