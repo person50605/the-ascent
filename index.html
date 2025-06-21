@@ -262,11 +262,11 @@ function activateButton() {
           if (eat_effect != 0) { //is there an effect for this?
             let on_num = 0;
             let nom = "";
-            
-            for (let m = 0; eat_effect[on_num] != undefined && m <= 2; m++) {
+            //TODO: merge the enclosed for loops somehow and make all the effects from one item into one listed effect.
+            //XXX: this code only works for items with eleven or less entries. To increase the limit, change the m conditional.
+            for (let m = 0; eat_effect[on_num] != undefined && m <= 10; m++) {//read all the effects
               
-              
-              for (let i = 0; eat_effect[i] != ":"; i++) {//read the effects
+              for (let i = 0; eat_effect[i] != ":"; i++) {//read the effect name
                 nom = nom + eat_effect[i]
                 on_num = i
                 
@@ -346,38 +346,24 @@ function drawinv(d,b,h,w) {
       //draw the buttons for scrolling
       //TODO: space the buttons correctly and make the arrows have the same dimensions
       //up button
-      ctx.moveTo(430, 64);
-      ctx.lineTo(400, 64);
-      ctx.lineTo(400, 94);
-      ctx.lineTo(430, 94);
-      ctx.lineTo(430, 64);
-      ctx.stroke();
+      ctx.rect(400,64,d,d)
       ctx.moveTo(415, 71);
       ctx.lineTo(425, 87);
       ctx.lineTo(405, 87);
       ctx.lineTo(415, 71);
-      ctx.stroke();
+
       //down button
-      ctx.moveTo(430, 144);
-      ctx.lineTo(400, 144);
-      ctx.lineTo(400, 114);
-      ctx.lineTo(430, 114);
-      ctx.lineTo(430, 144);
-      ctx.stroke();
+      ctx.rect(400,114,d,d)
       ctx.moveTo(415, 137);
       ctx.lineTo(425, 120);
       ctx.lineTo(405, 120);
       ctx.lineTo(415, 137);
-      ctx.stroke();
+      
   //draw the inventory
   for (n=0; n<h; n++) {
     for (i=0; i<w; i++) {
       //draw the boxes
-      ctx.moveTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
-      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*n+b+tpad);
-      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*(n+1)+tpad);
-      ctx.lineTo((b+d)*i+b+lpad, (b+d)*(n+1)+tpad);
-      ctx.lineTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
+      ctx.rect((b+d)*i+b+lpad,(b+d)*n+b+tpad,d,d);
       //add the item quantity
       if (inv [2] [n*10+i+1] != undefined) {
       ctx.fillText(inv [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
@@ -406,18 +392,8 @@ function draweq (d,b,h,w) {
   for (let n=0; n<h; n++) {
     for (let i=0; i<w; i++) {
       //draw the boxes
-      ctx.moveTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
-      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*n+b+tpad);
-      ctx.lineTo((b+d)*(i+1)+lpad, (b+d)*(n+1)+tpad);
-      ctx.lineTo((b+d)*i+b+lpad, (b+d)*(n+1)+tpad);
-      ctx.lineTo((b+d)*i+b+lpad, (b+d)*n+b+tpad);
-      //add the item quantity (irrelevant here)
-      /**
-      if (equipment [2] [n*10+i+1] != undefined) {
-        ctx.fillText(equipment [2] [n*10+i+1],(b+d)*(i+1)-d+1+lpad, (b+d)*n+b+d-2+tpad);
-      }
-      **/
-      if (equipment [1] [n*3+i+1] != undefined) {
+      ctx.rect((b+d)*i+b+lpad, (b+d)*n+b+tpad,d,d);
+      if (equipment [1] [n*3+i+1] != undefined) {//show "images"
         ctx.fillText(equipment [1] [n*3+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
