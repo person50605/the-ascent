@@ -31,7 +31,7 @@
 //hopefully I don't misspell "player_status" as "player_stats"
 player_status = [ ["error"],
 //name
-["error","hpregen","strup","dblore"],
+["error","hpregen","strength","dblore"],
 //potency
 ["error",0.5,10,1],
 //duration (remaining)
@@ -175,9 +175,16 @@ player_stats = [ ["error"],
 //base stat values
 ["error",1,10,10,10,10,10,10],
 
-//derived stat names
+//derived stat names (calculated on base stats)
 ["error","health","max health","health regen","mana","max mana","mana regen"],
 //derived stat values
+["error",100,100,50,50],
+
+
+//base stat values
+["error",1,10,10,10,10,10,10],
+
+//derived stat values (based on modded stats)
 ["error",100,100,50,50]
 
 ];
@@ -192,20 +199,23 @@ perception = 1;
 //declare functions
 
 function updatestats() {
-  //translate the base stats into var names. Unnecessary, but helpful. 
-  let player_mstats = player_stats;
+   //player_stats[5||6][X] should be used for most calculations
+  //let player_mstats = player_stats;
+  //mstatus is a moddable status array(removing statuses doesn't actually remove them)
   let player_mstatus = player_status
-  for (let i=1; i<=6;i++){
-    for (let j=1; player_mstatus[1].includes(player_mstats[1][i]);j++){
+  for (let i=1; i<=6;i++){//add status effects to modded stats
+    for (let j=1; player_mstatus[1].includes(player_stats[1][i]) && j<=10;j++){
       let l = 0;
-      for (let k=1;player_mstatus[1][k] != player_mstats[1][i];k++){
+      for (let k=1;player_mstatus[1][k] != player_stats[1][i] && k<=10;k++){
         l=k;
+        document.getElementById("debug").innerHTML = player_mstatus[1][k];
       }
-      player_mstats[2][k]+=player_status[2][k];
-      player_mstatus[1].splice(k,1);
-      player_mstatus[2].splice(k,1);
+      player_stats[6][l]+=player_status[2][l];
+      player_mstatus[1].splice(l,1);
+      player_mstatus[2].splice(l,1);
     }
   }
+  //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
   let dex = player_stats[2][3]
@@ -213,10 +223,21 @@ function updatestats() {
   let cha = player_stats[2][5]
   let lck = player_stats[2][6]
   let vit = player_stats[2][7]
+  /**
+   Derived stats: hp, mhp, hp regen, mana, max mana, mana regen
+    Subject to rebalancing.
+   **/
+
   //max health
-  player_stats[4][2] = 5*lvl + 10*str
+  player_stats[4][2] = 5*lvl + 10*vit
+  //health regen (per tick)
+  player_stats[4][3] = 1 + 0.1*vit
   //max mana
   player_stats[4][4] = 5*lvl + 10*int
+  //mana regen
+  player_stats[4][5] = 1 + 1*int
+  
+  
   
 }
 
@@ -228,6 +249,7 @@ function change() {
 function findstr() {
   perception +=1;
   document.getElementById("per").innerHTML = perception;
+  updatestats();
 }
 
 
@@ -247,6 +269,7 @@ function tick() {
   }
   perception +=1;
   document.getElementById("statuses").innerHTML = player_status[3];
+  //updatestats();
   setTimeout(tick, 1000); //repeat the function
 }
 
@@ -354,7 +377,8 @@ function activateButton() {
                     nom = nom + eat_effect[on_num]
                     on_num ++
                   }
-                  on_num += 2;
+                  
+                  on_num += 1;
                   player_status[2].push(nom);
                   nom = "";
                   
@@ -362,6 +386,7 @@ function activateButton() {
                     nom = nom + eat_effect[on_num]
                     on_num ++
                   }
+                  document.getElementById("debug").innerHTML = nom;
                   on_num++
                   player_status[3].push(nom);
                   nom = "";
@@ -379,10 +404,10 @@ function activateButton() {
                   //nested if statements for checking the effects
                   if (effect_name == "health") {
                     player_stats[2][1] += nom;
-                    if (player_stats[2][1] > player_stats[2][2]) {//no overflow health
-                      player_stats[2][1] = player_stats[2][2];
+                    if (player_stats[2][1] > player_stats[5][2]) {//no overflow health
+                      player_stats[2][1] = player_stats[5][2];
                     }
-                    //document.getElementById("debug").innerHTML = player_stats[2][1];
+                    document.getElementById("debug").innerHTML = player_stats[2][1];
                   }//TODO: add more cases for other effects
                   
                 }
