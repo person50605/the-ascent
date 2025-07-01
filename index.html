@@ -334,7 +334,7 @@ function activateButton() {
             //XXX: this code only works for items with eleven or less entries. To increase the limit, change or remove the m conditional.
             for (let m = 0; eat_effect[on_num] != undefined && m <= 10; m++) {//read all the effects
               
-              if (eat_effect[on_num] == "s") {
+              if (eat_effect[on_num] == "s") {//is it targeting the player?
                 on_num+=2;
                 effect_type = eat_effect[on_num];
                 
@@ -346,11 +346,10 @@ function activateButton() {
                   on_num = i
                 }
                 
-                if (effect_type = "t") {//is the effect over time?
+                if (effect_type == "t") {//is the effect over time?
                   on_num++
                   player_status[1].push(nom);
                   nom = "";
-                
                   for (let i = on_num; eat_effect[i] != ","; i++) {//read the potency
                     nom = nom + eat_effect[i]
                     on_num = i
@@ -386,7 +385,7 @@ function activateButton() {
                   }//TODO: add more cases for other effects
                   
                 }
-              } //TODO: add case for targeting enemy
+              }//elseif(){} //TODO: add case for targeting enemy
             }
             
           }
