@@ -6,9 +6,9 @@
 <!-- these divs are here to enable storing information between functions -->
 <div id="x"> hi</div>
 <div id="y"> hello</div>
-<div id="mousex" style="font:20px Arial"> str </div>
-  <div id="mousey"> str </div>
-  <div id="mouseh"> str </div>
+<div id="mousex" style="font:20px Arial"> mouse x </div>
+  <div id="mousey"> mouse y </div>
+  <div id="mouseh"> mouse h </div>
   <div id="invlpad"></div>
   <div id="invtpad"></div>
   <div id="eqlpad"></div>
@@ -25,8 +25,10 @@
 //I like my arrays to start at 1, so there's a placeholder "error" at the start of each one
 
 
+
+
 //player statuses
-//hopefully I don't misspell "player_status" and have a "player_stats" list
+//hopefully I don't misspell "player_status" as "player_stats"
 player_status = [ ["error"],
 //name
 ["error","hpregen","strup","dblore"],
@@ -42,9 +44,9 @@ player_status = [ ["error"],
 //inventory
 inv = [ ["error"],
 //names`
-["error","sword","shield","bread"],
+["error","sword","shield","bread","health potion","phial of strength"],
 //quantities of the items
-["error",1,2,1000],
+["error",1,2,1000,1000,1000],
 //modifications to the items (like xp or enchants)
 ["error"]
 ];
@@ -66,11 +68,17 @@ items = [ ["error"],
 //names
 ["error",
 "sword",
-"shield"],
+"shield",
+"bread",
+"health potion",
+"phial of strength"],
 //descriptions
 ["error",
 "A wooden sword",
-"A small buckler"
+"A small buckler",
+"a loaf of bread",
+"a small potion that restores your health when imbibed.",
+"a small phial of a liquid that increases your strength"
 ],
 
 ];
@@ -138,15 +146,44 @@ equippable_tags = [ ["error"],
 ];
 
 
-comestible_tags = [ ["error"],
+consumable_tags = [ ["error"],
 //names
-["error","bread"],
-//efects (effect:potency,duration) (effects are seperated by a dash (-))
-["error","hpregen:0.5,30"]
+["error","bread","health potion","phial of strength"],
+/**
+efects (target,type,effect:potency,duration) (effects are seperated by a dash (-))
+
+target: (s)elf or (e)nemy
+type: over (t)ime or (i)nstant
+efect: name of the effect
+potency: how strong the effect is.
+duration: how many ticks the effect lasts, if effect is over time.
+**/
+["error","s,t,health regen:0.5,30","s,i,health:50","s,t,strength:1,100"]
 
 ];
 
-strength = 1;
+
+  
+  
+  
+//the player's (base) stats
+//XXX: this list stores ONLY the base stats of the player. This is not reliable for 
+//calculations that need to consider non-level-based stats (like damage dealt or recieved)
+player_stats = [ ["error"],
+//base stat names
+["error","level","strength","dexterity","intelligence","charisma","luck","vitality"],
+//base stat values
+["error",1,10,10,10,10,10,10],
+
+//derived stat names
+["error","health","max health","health regen","mana","max mana","mana regen"],
+//derived stat values
+["error",100,100,50,50]
+
+];
+  
+
+perception = 1;
 
   
   
@@ -154,21 +191,51 @@ strength = 1;
   
 //declare functions
 
+function updatestats() {
+  //translate the base stats into var names. Unnecessary, but helpful. 
+  let player_mstats = player_stats;
+  let player_mstatus = player_status
+  for (let i=1; i<=6;i++){
+    for (let j=1; player_mstatus[1].includes(player_mstats[1][i]);j++){
+      let l = 0;
+      for (let k=1;player_mstatus[1][k] != player_mstats[1][i];k++){
+        l=k;
+      }
+      player_mstats[2][k]+=player_status[2][k];
+      player_mstatus[1].splice(k,1);
+      player_mstatus[2].splice(k,1);
+    }
+  }
+  let lvl = player_stats[2][1]
+  let str = player_stats[2][2]
+  let dex = player_stats[2][3]
+  let int = player_stats[2][4]
+  let cha = player_stats[2][5]
+  let lck = player_stats[2][6]
+  let vit = player_stats[2][7]
+  //max health
+  player_stats[4][2] = 5*lvl + 10*str
+  //max mana
+  player_stats[4][4] = 5*lvl + 10*int
+  
+}
+
 
 function change() {
-  document.getElementById("str").innerHTML = "I have changed!";
+  document.getElementById("per").innerHTML = "I have changed!";
 }
 
 function findstr() {
-  strength +=1;
-  document.getElementById("str").innerHTML = strength;
+  perception +=1;
+  document.getElementById("per").innerHTML = perception;
 }
+
 
 
 function tick() {
 
 
-  //decrease all statuses by one
+  //decrease all status durations by one
   player_status[3]=player_status[3].map((i)=>i-1)
   for (i=1;i<player_status[3].length;i++) {
     if (player_status[3][i] <= 0) {
@@ -178,7 +245,7 @@ function tick() {
       //recalculate stats here (preferably through calling a function)
     }
   }
-  strength +=1;
+  perception +=1;
   document.getElementById("statuses").innerHTML = player_status[3];
   setTimeout(tick, 1000); //repeat the function
 }
@@ -246,14 +313,13 @@ function activateButton() {
             
         
         } 
-        else if (comestible_tags.some(m=>m.includes(inv[1][hovering]))) {//can it be eaten?
+        else if (consumable_tags.some(m=>m.includes(inv[1][hovering]))) {//can it be eaten?
           //remove the item
           inv[2][hovering] -= 1;
           let eat_effect = 0;
-          for (let i = 1;i<comestible_tags[1].length;i++) { //find the effects of the item eaten as a raw string
-            if (comestible_tags[1][i] == inv[1][hovering]) {
-              eat_effect = comestible_tags[2][i]
-              
+          for (let i = 1;i<consumable_tags[1].length;i++) { //find the effects of the item eaten as a raw string
+            if (consumable_tags[1][i] == inv[1][hovering]) {
+              eat_effect = consumable_tags[2][i]
               break;
             }
           }
@@ -262,35 +328,65 @@ function activateButton() {
           if (eat_effect != 0) { //is there an effect for this?
             let on_num = 0;
             let nom = "";
+            let effect_type = "";
+            let effect_name = "";
             //TODO: merge the enclosed for loops somehow and make all the effects from one item into one listed effect.
-            //XXX: this code only works for items with eleven or less entries. To increase the limit, change the m conditional.
+            //XXX: this code only works for items with eleven or less entries. To increase the limit, change or remove the m conditional.
             for (let m = 0; eat_effect[on_num] != undefined && m <= 10; m++) {//read all the effects
               
-              for (let i = 0; eat_effect[i] != ":"; i++) {//read the effect name
-                nom = nom + eat_effect[i]
-                on_num = i
+              if (eat_effect[on_num] == "s") {
+                on_num+=2;
+                effect_type = eat_effect[on_num];
                 
-              }
-              on_num++
-              player_status[1].push(nom);
-              nom = "";
+                on_num+=2;
+                
               
-              for (let i = on_num; eat_effect[i] != ","; i++) {//read the potency
-                nom = nom + eat_effect[i]
-                on_num = i
-              }
-              on_num += 2;
-              player_status[2].push(nom);
-              nom = "";
-              
-              for (let i = on_num; eat_effect[i] != "-" && eat_effect[i] != undefined; i++) {//read the duration
-                nom = nom + eat_effect[i]
-                on_num = i
-              }
-              on_num++
-              player_status[3].push(nom);
-              nom = "";
-              
+                for (let i = on_num; eat_effect[i] != ":"; i++) {//read the effect name
+                  nom = nom + eat_effect[i]
+                  on_num = i
+                }
+                
+                if (effect_type = "t") {//is the effect over time?
+                  on_num++
+                  player_status[1].push(nom);
+                  nom = "";
+                
+                  for (let i = on_num; eat_effect[i] != ","; i++) {//read the potency
+                    nom = nom + eat_effect[i]
+                    on_num = i
+                  }
+                  on_num += 2;
+                  player_status[2].push(nom);
+                  nom = "";
+                  
+                  for (let i = on_num; eat_effect[i] != "-" && eat_effect[i] != undefined; i++) {//read the duration
+                    nom = nom + eat_effect[i]
+                    on_num = i
+                  }
+                  on_num++
+                  player_status[3].push(nom);
+                  nom = "";
+                  
+                } else if (effect_type == "i") {//is the effect instant?
+                  effect_name = nom;
+                  on_num++
+                  nom = "";
+                  
+                  for (let i = on_num; eat_effect[i] != "-" && eat_effect[i] != undefined && i<=10; i++) {//read the potency
+                    nom = nom + eat_effect[i]
+                    document.getElementById("debug").innerHTML = nom;
+                    on_num = i
+                  }
+                  //nested if statements for checking the effects
+                  if (effect_name == "health") {
+                    player_stats[2][1] += nom;
+                    if (player_stats[2][1] > player_stats[2][2]) {//no overflow health
+                      player_stats[2][1] = player_stats[2][2];
+                    }
+                  }//TODO: add more cases for other effects
+                  
+                }
+              } //TODO: add case for targeting enemy
             }
             
           }
@@ -312,8 +408,10 @@ function activateButton() {
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
   } else if (mx<164 && mx>=63 && my<210 && my>74) { //is the button in the equipment area?
+    //convert mousePos to boxes
     mx = Math.round((mx-eqlpad+b)/(b+d));
     my = Math.ceil((my-50-eqtpad-b)/(b+d));
+    //which box is being clicked?
     hovering = (my-1)*3+mx;
     if (equipment [2] [hovering] == undefined) {
       equipment [2] [hovering] = 1;
@@ -325,6 +423,7 @@ function activateButton() {
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
   }
+    //redraw (the relevant parts of) the screen
     drawinv(30,4,6,10);
     draweq(30,4,4,3);
 }
@@ -402,15 +501,15 @@ function draweq (d,b,h,w) {
 }
 
 
-
-//constant mouse tracking
-const pageX = document.getElementById("x");
-const pageY = document.getElementById("y");
-
 function updateMousePos(event) {
   pageX.innerText = event.pageX;
   pageY.innerText = event.pageY;
 }
+//constant mouse tracking
+const pageX = document.getElementById("x");
+const pageY = document.getElementById("y");
+
+
 
 
 
@@ -434,7 +533,7 @@ function updateMousePos(event) {
 </p>
     
 <p>
-  <div id="str" onclick="change()"> str </div>
+  <div id="per" onclick="change()"> str </div>
 
 </p>
 
