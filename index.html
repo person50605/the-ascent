@@ -15,7 +15,7 @@
   <div id="eqtpad"></div>
   <div id="invlen"> wheeeee</div>
   <div id="whei"> heheheha</div>
-  <div id="debug"> hihiih</div>
+  <div id="debug"> debug</div>
   <div id="statuses"> helllo</div>
 
 <!-- functions and vars -->
@@ -368,13 +368,13 @@ function activateButton() {
                   
                 } else if (effect_type == "i") {//is the effect instant?
                   effect_name = nom;
-                  on_num++
+                  on_num+=2;
                   nom = "";
                   
-                  for (let i = on_num; eat_effect[i] != "-" && eat_effect[i] != undefined && i<=10; i++) {//read the potency
-                    nom = nom + eat_effect[i]
+                  for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
+                    nom = nom + eat_effect[on_num]
                     document.getElementById("debug").innerHTML = nom;
-                    on_num = i
+                    on_num ++
                   }
                   //nested if statements for checking the effects
                   if (effect_name == "health") {
@@ -382,6 +382,7 @@ function activateButton() {
                     if (player_stats[2][1] > player_stats[2][2]) {//no overflow health
                       player_stats[2][1] = player_stats[2][2];
                     }
+                    //document.getElementById("debug").innerHTML = player_stats[2][1];
                   }//TODO: add more cases for other effects
                   
                 }
