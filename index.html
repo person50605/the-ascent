@@ -16,6 +16,7 @@
   <div id="invlen"> wheeeee</div>
   <div id="whei"> heheheha</div>
   <div id="debug"> debug</div>
+  <div id="status names"> helloo</div>
   <div id="statuses"> helllo</div>
 
 <!-- functions and vars -->
@@ -31,11 +32,11 @@
 //hopefully I don't misspell "player_status" as "player_stats"
 player_status = [ ["error"],
 //name
-["error","hpregen","strength","dblore"],
+["error","health regen","strength","dblore"],
 //potency
 ["error",0.5,10,1],
 //duration (remaining)
-["error",30,5,100]
+["error",30,50,100]
 
 ];
 
@@ -205,22 +206,31 @@ function updatestats() {
   //mstatus is a moddable status array(removing statuses doesn't actually remove them)
   let player_mstatus = player_status
   //document.getElementById("debug").innerHTML = player_mstatus[1];
-
-  for (let i=1; i<6;i++){//add status effects to modded stats
-    //document.getElementById("debug").innerHTML = i;
-    for (let j=1; player_mstatus[1].includes(player_stats[1][i]) && j<=player_mstatus[1].length;j++){//so long as the stat name is in the list, keep searching
-      let l = 0;
-      foo++
-      for (let k=1;player_mstatus[1][k] != player_stats[1][i] && k<=player_mstatus[1].length;k++){//search the entire list for said name
-        l=k;
-        //document.getElementById("debug").innerHTML = player_mstatus[1].includes(player_stats[1][i]);
+  for (let i=1; i<=6; i++) {//check for each (base) stat
+  //TODO: check if status exists
+    for (let l=1;player_mstatus[1].includes(player_stats[1][i])&&l<=10;l++) {
+      let k=undefined
+      for (let j=1;player_stats[1][i] != player_mstatus[1][j] && j<=player_mstatus[1].length;j++) {//find the number of the status
+        foo = player_mstatus[1][j];
+        k=j;
       }
-      player_stats[5][l]+=player_mstatus[2][l];
+    
+    player_mstatus[1].splice(k,1);
+    player_mstatus[2].splice(k,1);
+    if (foo != undefined) {
       document.getElementById("debug").innerHTML = foo;
+
+    }
+      
+    }
+    //foo++
+    
+  }
+
+      player_stats[5][l]+=player_mstatus[2][l];
+      
       player_mstatus[1].splice(l,1);
       player_mstatus[2].splice(l,1);
-    }
-  }
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
@@ -274,6 +284,7 @@ function tick() {
     }
   }
   //perception +=1;
+  document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
   //updatestats();
   setTimeout(tick, 1000); //repeat the function
