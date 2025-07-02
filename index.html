@@ -199,18 +199,24 @@ perception = 1;
 //declare functions
 
 function updatestats() {
+  let foo = 0;
    //player_stats[5||6][X] should be used for most calculations
   //let player_mstats = player_stats;
   //mstatus is a moddable status array(removing statuses doesn't actually remove them)
   let player_mstatus = player_status
-  for (let i=1; i<=6;i++){//add status effects to modded stats
-    for (let j=1; player_mstatus[1].includes(player_stats[1][i]) && j<=10;j++){
+  //document.getElementById("debug").innerHTML = player_mstatus[1];
+
+  for (let i=1; i<6;i++){//add status effects to modded stats
+    //document.getElementById("debug").innerHTML = i;
+    for (let j=1; player_mstatus[1].includes(player_stats[1][i]) && j<=player_mstatus[1].length;j++){//so long as the stat name is in the list, keep searching
       let l = 0;
-      for (let k=1;player_mstatus[1][k] != player_stats[1][i] && k<=10;k++){
+      foo++
+      for (let k=1;player_mstatus[1][k] != player_stats[1][i] && k<=player_mstatus[1].length;k++){//search the entire list for said name
         l=k;
-        document.getElementById("debug").innerHTML = player_mstatus[1][k];
+        //document.getElementById("debug").innerHTML = player_mstatus[1].includes(player_stats[1][i]);
       }
-      player_stats[6][l]+=player_status[2][l];
+      player_stats[5][l]+=player_mstatus[2][l];
+      document.getElementById("debug").innerHTML = foo;
       player_mstatus[1].splice(l,1);
       player_mstatus[2].splice(l,1);
     }
@@ -267,7 +273,7 @@ function tick() {
       //recalculate stats here (preferably through calling a function)
     }
   }
-  perception +=1;
+  //perception +=1;
   document.getElementById("statuses").innerHTML = player_status[3];
   //updatestats();
   setTimeout(tick, 1000); //repeat the function
@@ -566,7 +572,9 @@ const pageY = document.getElementById("y");
 
 
 <!-- Equipment drawing -->
-<canvas id="eq" height="275" width="200"
+<!--XXX: the canvas height should be 275, but it was temporarily changed for debugging reasons-->
+<canvas id="eq" height="200"
+width="200"
 style="border:1px solid #000000;position:fixed;left:10px;top:50px">
   <script>
   eq.addEventListener("mousemove", updateMousePos);
