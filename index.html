@@ -205,45 +205,37 @@ function updatestats() {
   //let player_mstats = player_stats;
   //mstatus is a moddable status array(removing statuses doesn't actually remove them)
 
-  console.log("hi")
+  for (let i=1;i<=player_stats[5].length-1;i++){//reset modded stats
+      player_stats[5][i]=player_stats[2][i]
+  }
   let player_mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
-  for (let i=0;i<=3;i++){
+  for (let i=0;i<=3;i++){//load up the temp. list
     let k = "error";
     for (let j=0;j<player_status[3].length;j++){
       k=player_status[i][j];
       player_mstatus[i][j]=k;
     }
-   
   }
-  document.getElementById("debug").innerHTML = player_status[3];
-  //document.getElementById("debug").innerHTML = player_mstatus[1];
+ array = [];
   for (let i=1; i<=6; i++) {//check for each (base) stat
-  //TODO: check if status exists
-    for (let l=1;player_mstatus[1].includes(player_stats[1][i])&&l<=10;l++) {
+
+    for (let l=1;player_mstatus[1].includes(player_stats[1][i]);l++) {
       let k=1;
       for (let j=1;player_stats[1][i] != player_mstatus[1][j] && j<=player_mstatus[1].length;j++) {//find the number of the status
-        foo += player_mstatus[1][j];
         k=j;
       }
-    player_stats[5][i]+=player_mstatus[2][l];
+    player_stats[5][i]+=parseInt(player_mstatus[2][k]);
+    array[array.length]=player_mstatus[2][k];
     player_mstatus[1].splice(k,1);
     player_mstatus[2].splice(k,1);
     player_mstatus[3].splice(k,1);
-    if (foo != undefined) {
-      //document.getElementById("debug").innerHTML = foo;
 
-    }
       
-    }
-    //foo++
-    
+    } 
   }
-
-      
-      
-      player_mstatus[1].splice(l,1);
-      player_mstatus[2].splice(l,1);
+  document.getElementById("debug").innerHTML = player_stats[5]
+  console.log(array)
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
