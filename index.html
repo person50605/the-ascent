@@ -258,13 +258,13 @@ function updatestats() {
   player_stats[4][6] = 1 + 1*int
   
   //level setting is probably unnesecary, but maybe there'll be smth that changes your level.
-  let lvl = player_stats[5][1]
-  let str = player_stats[5][2]
-  let dex = player_stats[5][3]
-  let int = player_stats[5][4]
-  let cha = player_stats[5][5]
-  let lck = player_stats[5][6]
-  let vit = player_stats[5][7]
+  lvl = player_stats[5][1]
+  str = player_stats[5][2]
+  dex = player_stats[5][3]
+  int = player_stats[5][4]
+  cha = player_stats[5][5]
+  lck = player_stats[5][6]
+  vit = player_stats[5][7]
   /**
    Derived stats: (hp,) mhp, hp regen, (mp,) max mp, mana regen
     Subject to rebalancing.
@@ -317,9 +317,9 @@ function tick() {
   let player_regen=player_stats[7][3]
   let player_mhp=player_stats[7][2]
   player_hp+=player_regen
-  if(player_hp>player_mhp){
+  if(player_hp>player_mhp) {
     player_hp=player_mhp;
-  } elseif(player_hp<=0){
+  } else if(player_hp<=0) {
     //TODO: Add death code
   }
   
