@@ -229,6 +229,8 @@ function updatestats() {
     player_mstatus[2].splice(k,1);
     player_mstatus[3].splice(k,1);
 
+
+
       
     } 
   }
@@ -272,14 +274,14 @@ function updatestats() {
 
   //(health)
   //max health
-  player_stats[7][2] = 5*lvl + 10*vit
+  player_stats[6][2] = 5*lvl + 10*vit
   //health regen (per tick)
-  player_stats[7][3] = 1 + 0.1*vit
+  player_stats[6][3] = 1 + 0.1*vit
   //(mana)
   //max mana
-  player_stats[7][5] = 5*lvl + 10*int
+  player_stats[6][5] = 5*lvl + 10*int
   //mana regen
-  player_stats[7][6] = 1 + 1*int
+  player_stats[6][6] = 1 + 1*int
   
   
   
@@ -313,6 +315,7 @@ function tick() {
       //recalculate stats here (preferably through calling a function)
     }
   }
+  /**
   let player_hp=player_stats[3][1] 
   let player_regen=player_stats[7][3]
   let player_mhp=player_stats[7][2]
@@ -322,7 +325,7 @@ function tick() {
   } else if(player_hp<=0) {
     //TODO: Add death code
   }
-  
+  **/
   //perception +=1;
   document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
