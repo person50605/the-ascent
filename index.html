@@ -200,27 +200,19 @@ perception = 1;
 //declare functions
 
 function updatestats() {
-  let foo = 0;
+
    //player_stats[5||6][X] should be used for most calculations
   //let player_mstats = player_stats;
   //mstatus is a moddable status array(removing statuses doesn't actually remove them)
 
   console.log("hi")
-  let player_mstatus = [["error"],["error","error"],["error","error"]];
+  let player_mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
   for (let i=0;i<=3;i++){
     let k = "error";
-    for (let j=0;j<player_status[i].length;j++){
-      console.log(player_status[i][j])
-      console.log(i)
-      console.log(j)
+    for (let j=0;j<player_status[3].length;j++){
       k=player_status[i][j];
       player_mstatus[i][j]=k;
-      foo = j
-      foo += i*3
-      console.log(foo)
-
-
     }
    
   }
