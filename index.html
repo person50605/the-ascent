@@ -217,7 +217,6 @@ function updatestats() {
       player_mstatus[i][j]=k;
     }
   }
- array = [];
   for (let i=1; i<=6; i++) {//check for each (base) stat
 
     for (let l=1;player_mstatus[1].includes(player_stats[1][i]);l++) {
@@ -225,8 +224,7 @@ function updatestats() {
       for (let j=1;player_stats[1][i] != player_mstatus[1][j] && j<=player_mstatus[1].length;j++) {//find the number of the status
         k=j;
       }
-    player_stats[5][i]+=parseInt(player_mstatus[2][k]);
-    array[array.length]=player_mstatus[2][k];
+    player_stats[5][i]+=parseInt(player_mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
     player_mstatus[1].splice(k,1);
     player_mstatus[2].splice(k,1);
     player_mstatus[3].splice(k,1);
@@ -235,7 +233,6 @@ function updatestats() {
     } 
   }
   document.getElementById("debug").innerHTML = player_stats[5]
-  console.log(array)
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
@@ -249,14 +246,41 @@ function updatestats() {
     Subject to rebalancing.
    **/
 
+  //(health)
   //max health
   player_stats[4][2] = 5*lvl + 10*vit
   //health regen (per tick)
   player_stats[4][3] = 1 + 0.1*vit
+  //(mana)
   //max mana
-  player_stats[4][4] = 5*lvl + 10*int
+  player_stats[4][5] = 5*lvl + 10*int
   //mana regen
-  player_stats[4][5] = 1 + 1*int
+  player_stats[4][6] = 1 + 1*int
+  
+  //level setting is probably unnesecary, but maybe there'll be smth that changes your level.
+  let lvl = player_stats[5][1]
+  let str = player_stats[5][2]
+  let dex = player_stats[5][3]
+  let int = player_stats[5][4]
+  let cha = player_stats[5][5]
+  let lck = player_stats[5][6]
+  let vit = player_stats[5][7]
+  /**
+   Derived stats: (hp,) mhp, hp regen, (mp,) max mp, mana regen
+    Subject to rebalancing.
+  **/
+
+  //(health)
+  //max health
+  player_stats[7][2] = 5*lvl + 10*vit
+  //health regen (per tick)
+  player_stats[7][3] = 1 + 0.1*vit
+  //(mana)
+  //max mana
+  player_stats[7][5] = 5*lvl + 10*int
+  //mana regen
+  player_stats[7][6] = 1 + 1*int
+  
   
   
   
@@ -276,7 +300,7 @@ function findstr() {
 
 
 function tick() {
-
+  //Time controls & SBA's
 
   //decrease all status durations by one
   for (i=1;i<player_status[3].length;i++) {
@@ -285,17 +309,29 @@ function tick() {
       player_status[1].splice(i,1);
       player_status[2].splice(i,1);
       player_status[3].splice(i,1);
+      updatestats();
       //recalculate stats here (preferably through calling a function)
     }
   }
+  let player_hp=player_stats[3][1] 
+  let player_regen=player_stats[7][3]
+  let player_mhp=player_stats[7][2]
+  player_hp+=player_regen
+  if(player_hp>player_mhp){
+    player_hp=player_mhp;
+  } elseif(player_hp<=0){
+    //TODO: Add death code
+  }
+  
   //perception +=1;
   document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
-  //updatestats();
+
   setTimeout(tick, 1000); //repeat the function
 }
 
 function activateButton() {
+  //TODO: redraw the inv & eq on page load to saturate the last boxes
   let mx = document.getElementById("x").innerHTML;
   let my = document.getElementById("y").innerHTML;
   let hovering = 1;
