@@ -172,21 +172,23 @@ duration: how many ticks the effect lasts, if effect is over time.
 //calculations that need to consider non-level-based stats (like damage dealt or recieved)
 player_stats = [ ["error"],
 //base stat names
-["error","level","strength","dexterity","intelligence","charisma","luck","vitality"],
+["error","level","strength","dexterity","intelligence","charisma","luck","vitality"], //1
 //base stat values
-["error",1,10,10,10,10,10,10],
+["error",1,10,10,10,10,10,10], //2
 
 //derived stat names (calculated on base stats)
-["error","health","max health","health regen","mana","max mana","mana regen"],
+//XXX: the health and mana values from this part of the array shouldn't be used
+["error","health","max health","health regen","mana","max mana","mana regen"], //3
 //derived stat values
-["error",100,100,50,50],
+["error",100,100,1,50,50,1], //4
 
+//modded stats
 
 //base stat values
-["error",1,10,10,10,10,10,10],
+["error",1,10,10,10,10,10,10], //5
 
 //derived stat values (based on modded stats)
-["error",100,100,50,50]
+["error",100,100,1,50,50,1] //6
 
 ];
   
@@ -315,18 +317,31 @@ function tick() {
       //recalculate stats here (preferably through calling a function)
     }
   }
-  /**
-  let player_hp=player_stats[3][1] 
-  let player_regen=player_stats[7][3]
-  let player_mhp=player_stats[7][2]
-  player_hp+=player_regen
+  
+  let player_hp=player_stats[6][1];
+  let player_regen=player_stats[6][3];
+  let player_mhp=player_stats[6][2];
+  let player_mp=player_stats[6][4];
+  let player_mp_regen=player_stats[6][6];
+  let player_mmp=player_stats[6][5];
+  player_hp+=player_regen;
   if(player_hp>player_mhp) {
     player_hp=player_mhp;
   } else if(player_hp<=0) {
     //TODO: Add death code
   }
-  **/
-  //perception +=1;
+  player_mp+=player_mp_regen;
+  if (player_mp>player_mmp){
+    player_mp=player_mmp;
+  }
+  
+  player_stats[6][1]=player_hp;
+  player_stats[6][3]=player_regen;
+  player_stats[6][2]=player_mhp;
+  player_stats[6][4]=player_mp;
+  player_stats[6][6]=player_mp_regen;
+  player_stats[6][5]=player_mmp;
+
   document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
 
