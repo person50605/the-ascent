@@ -4,20 +4,24 @@
 
 
 <!-- these divs are here to enable storing information between functions -->
-<div id="x"> hi</div>
-<div id="y"> hello</div>
-<div id="mousex" style="font:20px Arial"> mouse x </div>
+
+  <div id="invlpad"style="display:none;"></div>
+  <div id="invtpad"style="display:none;"></div>
+  <div id="eqlpad"style="display:none;"></div>
+  <div id="eqtpad"style="display:none;"></div>
+  <div id="invlen"style="display:none;"></div>
+  <div id="disp_obj"style="display:none;"></div>
+  
+  
+  <div id="x"> hi</div>
+  <div id="y"> hello</div>
+  <div id="mousex"> mouse x </div>
   <div id="mousey"> mouse y </div>
   <div id="mouseh"> mouse h </div>
-  <div id="invlpad"></div>
-  <div id="invtpad"></div>
-  <div id="eqlpad"></div>
-  <div id="eqtpad"></div>
-  <div id="invlen"> wheeeee</div>
-  <div id="whei"> heheheha</div>
   <div id="debug"> debug</div>
   <div id="status names"> helloo</div>
   <div id="statuses"> helllo</div>
+
 
 <!-- functions and vars -->
 <script>
@@ -192,6 +196,17 @@ player_stats = [ ["error"],
 
 ];
   
+//this is updated as the player moves
+navigation = [["error"],
+//displayed names
+["error","go outside"],
+//button ids (names)
+["error","travel"],
+//extra data (if needed)
+["error","town"]
+];
+
+player_location = "home";
 
 perception = 1;
 
@@ -291,15 +306,7 @@ function updatestats() {
 }
 
 
-function change() {
-  document.getElementById("per").innerHTML = "I have changed!";
-}
 
-function findstr() {
-  perception +=1;
-  document.getElementById("per").innerHTML = perception;
-  updatestats();
-}
 
 
 
@@ -364,7 +371,7 @@ function activateButton() {
   //TODO: make the inventory scroll buttons work
   if (mx<=390 && mx>50 && my<550 && my>350) { //is the button in the inventory?
     //switch mx & my units to boxes
-    mx = Math.ceil((mx-invlpad)/(b+d));
+    mx = Math.ceil((mx-10-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
     let eq_slot = false;
@@ -601,6 +608,25 @@ function draweq (d,b,h,w) {
   }
 }
 
+function drawdisplay(newobj){
+  var c = document.getElementById("display");
+  var ctx = c.getContext("2d");
+   ctx.clearRect(0, 0, 250, 250);
+   ctx.strokeStyle = "black";
+   ctx.font="10px Arial";
+   document.getElementById("disp_obj").innerHTML = newobj;
+   if (newobj != undefined) {
+
+   }
+   disp_obj =  document.getElementById("disp_obj").innerHTML;
+   //if (disp_obj != "nothing") {
+     ctx.fillText(disp_obj, 125,125);
+   //}
+}
+
+function drawnav(){
+  
+}
 
 function updateMousePos(event) {
   pageX.innerText = event.pageX;
@@ -624,12 +650,13 @@ const pageY = document.getElementById("y");
 
 
 <!-- Page setup -->
-<head>The Ascent</head>
+<canvas>
+  <head style="position:fixed;left:100px;top:200px">The Ascent</head>
+</canvas>
+
 <p>
 
   <button onclick="findstr()"> click me </button>
-  <button onclick="change()"> change </button>
-  <button onclick="drawinv()"> clear</button>
 
 </p>
     
@@ -643,8 +670,7 @@ const pageY = document.getElementById("y");
 
 <!-- Equipment drawing -->
 <!--XXX: the canvas height should be 275, but it was temporarily changed for debugging reasons-->
-<canvas id="eq" height="200"
-width="200"
+<canvas id="eq" height="290" width="450"
 style="border:1px solid #000000;position:fixed;left:10px;top:50px">
   <script>
   eq.addEventListener("mousemove", updateMousePos);
@@ -660,7 +686,7 @@ style="border:1px solid #000000;position:fixed;left:10px;top:50px">
 
 <!-- Inventory drawing -->
 <canvas id="inventory" height="300" width="450" 
-style="border:1px solid #000000;position:fixed;left:0px;top:350px">
+style="border:1px solid #000000;position:fixed;left:10px;top:350px">
 
   <script>
   inventory.addEventListener("mousemove", updateMousePos);
@@ -674,7 +700,31 @@ style="border:1px solid #000000;position:fixed;left:0px;top:350px">
   
 </canvas>
 
+<!-- display -->
 
+<canvas id="display" height="290" width="290" 
+style="border:1px solid #000000;position:fixed;left:470px;top:50px">
+  <script>
+    var c = document.getElementById("display");
+    var ctx = c.getContext("2d");
+    drawdisplay("nothing");
+  </script>
 
+</canvas>
+
+<!-- navigation -->
+
+<canvas id="nav" height="300" width="290" 
+style="border:1px solid #000000;position:fixed;left:470px;top:350px">
+  <script>
+    nav.addEventListener("mousemove", updateMousePos);
+    nav.addEventListener("mouseenter", updateMousePos);
+    nav.addEventListener("mouseleave", updateMousePos);
+    nav.addEventListener("click", activateButton);
+    var c = document.getElementById("nav");
+    var ctx = c.getContext("2d");
+    drawnav();
+  </script>
+</canvas>
 
 </html>
