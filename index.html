@@ -200,11 +200,11 @@ player_stats = [ ["error"],
 //this is updated as the player moves
 navigation = [["error"],
 //displayed names
-["error","go outside"],
+["error","go outside","go to bed"],
 //button ids (names)
-["error","travel"],
+["error","travel","sleep"],
 //extra data (if needed)
-["error","town"]
+["error","town",undefined]
 ];
 
 player_location = "home";
@@ -370,7 +370,7 @@ function activateButton() {
   let d = 30;
   //onclick logic
   //TODO: make the inventory scroll buttons work
-  if (mx<=390 && mx>50 && my<550 && my>350) { //is the button in the inventory?
+  if (mx<389 && mx>50 && my<550 && my>350) { //is the button in the inventory?
     //switch mx & my units to boxes
     mx = Math.ceil((mx-10-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
@@ -516,7 +516,8 @@ function activateButton() {
     document.getElementById("mousex").innerHTML = mx;
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
-  } else if (mx<164 && mx>=63 && my<210 && my>74) { //is the button in the equipment area?
+    
+  } else if (mx<164 && mx>62 && my<210 && my>74) { //is the button in the equipment area?
     //convert mousePos to boxes
     mx = Math.round((mx-eqlpad+b)/(b+d));
     my = Math.ceil((my-50-eqtpad-b)/(b+d));
@@ -531,6 +532,26 @@ function activateButton() {
     document.getElementById("mousex").innerHTML = mx;
     document.getElementById("mousey").innerHTML = my;
     document.getElementById("mouseh").innerHTML = hovering;
+  
+  
+    
+  
+    
+  
+  } else if (mx<761 && mx>469 && my<(429+navigation[1].length*25) && my>429) {//is it in the navigation panel; specifically, the buttons
+    let mh = Math.ceil((my-430)/25);
+    document.getElementById("mouseh").innerHTML=mh;
+    document.getElementById("debug").innerHTML=mh;
+    if (navigation[2][mh] == "travel") {
+      player_location = navigation[3][mh];
+      for (let i = 1;i<navigation[1].length;i++){
+        navigation[1][i] = undefined;
+        navigation[2][i] = undefined;
+        navigation[3][i] = undefined;
+      }
+      //TODO: add new buttons
+    }
+    drawnav();
   }
     //redraw (the relevant parts of) the screen
     drawinv(30,4,6,10);
@@ -628,6 +649,7 @@ function drawdisplay(newobj){
 function drawnav(){
   var c = document.getElementById("nav");
   var ctx = c.getContext("2d");
+   ctx.clearRect(0, 0, 1000, 1000);
   //room name XXX: it may be better to draw this after the description so the bottom line isn't drawn over by the desc box
   let rm_name = document.getElementById("room_name").innerHTML
   ctx.rect(-1,0,450,30);
@@ -647,12 +669,11 @@ function drawnav(){
   ctx.stroke();
   ctx.fillText(rm_dsc,nav.width/2,40);
   ctx.stroke();
-  ctx.strokeStyle="black";
+  ctx.strokeStyle="DimGray";
   ctx.fillStyle = "black";
-  for (i=1;i<=navigation[1].length;i++) {
-    ctx.rect(-1,80+i*25,450,25);
-    ctx.fillText(navigation[1][i],rm_name,nav.width/2,90+i*25);
-    
+  for (i=1;i<navigation[1].length;i++) {
+    ctx.rect(-1,80+(i-1)*25,450,25);
+    ctx.fillText(navigation[1][i],nav.width/2,90+(i-1)*25);
   }
   ctx.stroke();
 }
