@@ -11,7 +11,8 @@
   <div id="eqtpad"style="display:none;"></div>
   <div id="invlen"style="display:none;"></div>
   <div id="disp_obj"style="display:none;"></div>
-  
+  <div id="room_name"style="display:none;"></div>
+  <div id="room_desc"style="display:none;"></div>
   
   <div id="x"> hi</div>
   <div id="y"> hello</div>
@@ -625,7 +626,35 @@ function drawdisplay(newobj){
 }
 
 function drawnav(){
-  
+  var c = document.getElementById("nav");
+  var ctx = c.getContext("2d");
+  //room name XXX: it may be better to draw this after the description so the bottom line isn't drawn over by the desc box
+  let rm_name = document.getElementById("room_name").innerHTML
+  ctx.rect(-1,0,450,30);
+  ctx.font="Arial 10px"
+  ctx.strokeStyle="black"
+  ctx.textAlign="center"
+  ctx.fillText(rm_name,nav.width/2,10);
+  ctx.stroke();
+  //room description
+
+  let rm_dsc = document.getElementById("room_desc").innerHTML
+
+
+  ctx.strokeStyle = "grey";
+  ctx.fillStyle = "gray";
+  ctx.rect(-1,30,450,50);
+  ctx.stroke();
+  ctx.fillText(rm_dsc,nav.width/2,40);
+  ctx.stroke();
+  ctx.strokeStyle="black";
+  ctx.fillStyle = "black";
+  for (i=1;i<=navigation[1].length;i++) {
+    ctx.rect(-1,80+i*25,450,25);
+    ctx.fillText(navigation[1][i],rm_name,nav.width/2,90+i*25);
+    
+  }
+  ctx.stroke();
 }
 
 function updateMousePos(event) {
@@ -717,6 +746,8 @@ style="border:1px solid #000000;position:fixed;left:470px;top:50px">
 <canvas id="nav" height="300" width="290" 
 style="border:1px solid #000000;position:fixed;left:470px;top:350px">
   <script>
+    document.getElementById("room_name").innerHTML="House"
+    document.getElementById("room_desc").innerHTML="Your house"
     nav.addEventListener("mousemove", updateMousePos);
     nav.addEventListener("mouseenter", updateMousePos);
     nav.addEventListener("mouseleave", updateMousePos);
