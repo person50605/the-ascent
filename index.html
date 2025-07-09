@@ -777,6 +777,8 @@ function draweq (d,b,h,w) {
   ctx.clearRect(0, 0, 275, 200);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
   let tpad = 20;
   let lpad = 50;
   document.getElementById("eqtpad").innerHTML = tpad;
@@ -788,7 +790,7 @@ function draweq (d,b,h,w) {
       //draw the boxes
       ctx.rect((b+d)*i+b+lpad, (b+d)*n+b+tpad,d,d);
       if (equipment [1] [n*3+i+1] != undefined) {//show "images"
-        ctx.fillText(equipment [1] [n*3+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
+        ctx.fillText(equipment[1][n*3+i+1], (b+d)*(i+1)-d/2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
     }
@@ -796,8 +798,22 @@ function draweq (d,b,h,w) {
   
   
   /** stat box **/
-  ctx.rect(170,24,120,132);
-  ctx.rect(170,34,120,0); //draw a line
+  ctx.rect(170,24,180,132);
+  ctx.rect(170,40,180,0); //draw a line
+  ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,44)
+  ctx.font="Arial 16px";
+  ctx.strokeStyle="black";
+  ctx.fillText("Stats",260,35);
+    //hp & mp bar outlines
+    ctx.rect(178,44,80,12);
+    ctx.rect(262,44,80,12);
+    //fill the bars
+    ctx.fillStyle = "green"
+    ctx.fillRect(178,44,80*(player_stats[6][1]/player_stats[6][2]),12)
+    ctx.fillStyle = "blue"
+    ctx.fillRect(262,44,80*(player_stats[6][1]/player_stats[6][2]),12)
+    ctx.fillStyle = "black" //reset the colour
+
   ctx.stroke();
 }
 
@@ -825,15 +841,15 @@ function drawnav(){
   //room name XXX: it may be better to draw this after the description so the bottom line isn't drawn over by the desc box
   let rm_name = document.getElementById("room_name").innerHTML
   ctx.rect(-1,0,450,30);
-  ctx.font="Arial 10px"
+  ctx.font="Arial 15px"
   ctx.strokeStyle="black"
   ctx.textAlign="center"
+  //room name
   ctx.fillText(rm_name,nav.width/2,10);
+  ctx.font="Arial 10px"
   ctx.stroke();
   //room description
-
   let rm_dsc = document.getElementById("room_desc").innerHTML
-
 
   ctx.strokeStyle = "grey";
   ctx.fillStyle = "gray";
@@ -847,7 +863,7 @@ function drawnav(){
   for (let i=1;i<navigation[1].length;i++) {
     ctx.rect(-1,80+(i-1)*25,450,25);
     ctx.fillText(navigation[1][i],nav.width/2,90+(i-1)*25);
-      document.getElementById("debug").innerHTML = i
+    document.getElementById("debug").innerHTML = i;
   }
   ctx.stroke();
 }
