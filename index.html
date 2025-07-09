@@ -37,14 +37,23 @@
 //hopefully I don't misspell "player_status" as "player_stats"
 player_status = [ ["error"],
 //name
-["error","health regen","strength","dblore"],
+["error"],
 //potency
-["error",0.5,10,1],
+["error"],
 //duration (remaining)
-["error",30,50,100]
+["error"]
 
 ];
 
+enemy_status = [ ["error"],
+//name
+["error"],
+//potency
+["error"],
+//duration (remaining)
+["error"]
+
+];
 
 
 //inventory
@@ -93,6 +102,7 @@ items = [ ["error"],
 
   /**   item tags    **/
 
+  //(
 equippable_tags = [ ["error"],
 //cloak
 ["error",
@@ -150,7 +160,7 @@ equippable_tags = [ ["error"],
 ]
 
 ];
-
+  //)
 
 consumable_tags = [ ["error"],
 //names
@@ -170,8 +180,8 @@ duration: how many ticks the effect lasts, if effect is over time.
 
 
   
-  
-  
+  //(
+
 //the player's (base) stats
 //XXX: this list stores ONLY the base stats of the player. This is not reliable for 
 //calculations that need to consider non-level-based stats (like damage dealt or recieved)
@@ -196,6 +206,23 @@ player_stats = [ ["error"],
 ["error",100,100,1,50,50,1] //6
 
 ];
+  //)
+  
+  //(
+enemy_stats = [ ["error"],
+//bstats
+["error","level","strength","dexterity","intelligence","luck","vitality"], //1  enemies don't have cha
+["error",1,10,10,10,10,10], //2
+
+["error","health","max health","health regen","mana","max mana","mana regen"], //3
+["error",100,100,1,50,50,1] //4
+
+//mstats
+["error",1,10,10,10,10,10], //5
+
+["error",100,100,1,50,50,1] //6
+]
+  //)
   
 //this is updated as the player moves
 navigation = [["error"],
@@ -207,9 +234,13 @@ navigation = [["error"],
 ["error","town",undefined]
 ];
 
+
+
+
+
 player_location = "home";
 
-perception = 1;
+player_flags = [];
 
   
   
@@ -220,39 +251,39 @@ perception = 1;
 function updatestats() {
 
    //player_stats[5||6][X] should be used for most calculations
-  //let player_mstats = player_stats;
   //mstatus is a moddable status array(removing statuses doesn't actually remove them)
 
   for (let i=1;i<=player_stats[5].length-1;i++){//reset modded stats
       player_stats[5][i]=player_stats[2][i]
   }
-  let player_mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
+  //Status calculations
+  let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
   for (let i=0;i<=3;i++){//load up the temp. list
     let k = "error";
     for (let j=0;j<player_status[3].length;j++){
       k=player_status[i][j];
-      player_mstatus[i][j]=k;
+      mstatus[i][j]=k;
     }
   }
-  for (let i=1; i<=6; i++) {//check for each (base) stat
+  for (let i=1; i<=6; i++) {//check for each -- base -- stat
 
-    for (let l=1;player_mstatus[1].includes(player_stats[1][i]);l++) {
+    for (let l=1;mstatus[1].includes(player_stats[1][i]);l++) {
       let k=1;
-      for (let j=1;player_stats[1][i] != player_mstatus[1][j] && j<=player_mstatus[1].length;j++) {//find the number of the status
+      for (let j=1;player_stats[1][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
         k=j;
       }
-    player_stats[5][i]+=parseInt(player_mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
-    player_mstatus[1].splice(k,1);
-    player_mstatus[2].splice(k,1);
-    player_mstatus[3].splice(k,1);
-
-
-
-      
+    player_stats[5][i]+=parseInt(mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
+    mstatus[1].splice(k,1);
+    mstatus[2].splice(k,1);
+    mstatus[3].splice(k,1);
     } 
   }
-  document.getElementById("debug").innerHTML = player_stats[5]
+  
+  //equipment calculations
+  
+  
+  //document.getElementById("debug").innerHTML = player_stats[5]
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
@@ -277,7 +308,7 @@ function updatestats() {
   //mana regen
   player_stats[4][6] = 1 + 1*int
   
-  //level setting is probably unnesecary, but maybe there'll be smth that changes your level.
+  //level setting is probably unnecessary, but maybe there'll be smth that changes your level.
   lvl = player_stats[5][1]
   str = player_stats[5][2]
   dex = player_stats[5][3]
@@ -301,14 +332,94 @@ function updatestats() {
   //mana regen
   player_stats[6][6] = 1 + 1*int
   
-  
+  draweq();
   
   
 }
 
+function update_estats() {
+   for (let i=1;i<=enemy_stats[5].length-1;i++){//reset modded stats
+      enemy_stats[5][i]=enemy_stats[2][i]
+  }
+  //Status calculations
+  let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
+  for (let i=0;i<=3;i++){//load up the temp. list
+    let k = "error";
+    for (let j=0;j<enemy_status[3].length;j++){
+      k=enemy_status[i][j];
+      enemy_mstatus[i][j]=k;
+    }
+  }
+  for (let i=1; i<=6; i++) {//check for each -- base -- stat
 
+    for (let l=1;mstatus[1].includes(enemy_stats[1][i]);l++) {
+      let k=1;
+      for (let j=1;enemy_stats[1][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
+        k=j;
+      }
+    enemy_stats[5][i]+=parseInt(mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
+    mstatus[1].splice(k,1);
+    mstatus[2].splice(k,1);
+    mstatus[3].splice(k,1);
+    } 
+  }
+  
+  //equipment calculations
+  
+  //translate the base stats into var names. Unnecessary, but helpful.
+  let lvl = enemy_stats[2][1]
+  let str = enemy_stats[2][2]
+  let dex = enemy_stats[2][3]
+  let int = enemy_stats[2][4]
+  let cha = enemy_stats[2][5]
+  let lck = enemy_stats[2][6]
+  let vit = enemy_stats[2][7]
+  /**
+   Derived stats: hp, mhp, hp regen, mana, max mana, mana regen
+    Subject to rebalancing.
+   **/
 
+  //(health)
+  //max health
+  enemy_stats[4][2] = 5*lvl + 10*vit
+  //health regen (per tick)
+  enemy_stats[4][3] = 1 + 0.1*vit
+  //(mana)
+  //max mana
+  enemy_stats[4][5] = 5*lvl + 10*int
+  //mana regen
+  enemy_stats[4][6] = 1 + 1*int
+  
+  //level setting is probably unnecessary, but maybe there'll be smth that changes your level.
+  lvl = enemy_stats[5][1]
+  str = enemy_stats[5][2]
+  dex = enemy_stats[5][3]
+  int = enemy_stats[5][4]
+  cha = enemy_stats[5][5]
+  lck = enemy_stats[5][6]
+  vit = enemy_stats[5][7]
+  /**
+   Derived stats: (hp,) mhp, hp regen, (mp,) max mp, mana regen
+    Subject to rebalancing.
+  **/
+
+  //(health)
+  //max health
+  enemy_stats[6][2] = 5*lvl + 10*vit
+  //health regen (per tick)
+  enemy_stats[6][3] = 1 + 0.1*vit
+  //(mana)
+  //max mana
+  enemy_stats[6][5] = 5*lvl + 10*int
+  //mana regen
+  enemy_stats[6][6] = 1 + 1*int
+  
+  
+  
+  
+  
+}
 
 
 function tick() {
@@ -356,6 +467,35 @@ function tick() {
   setTimeout(tick, 1000); //repeat the function
 }
 
+function startcombat(area) {
+  
+  function getenemy(names,chances,nmy_lvls) { //randomly picks an enemy from the provided list
+    let enemy = Math.random();
+    let enemy_lvl = 1
+    let azar = 0.00000000000000001;
+    for (let i = 0;i<=nombres.length;i++){
+      azar += azares[i]
+      if (enemy<=azar) {
+        enemy = nombres[i]
+        enemy_lvl = nmy_lvls[i] //Get it? nmy?
+        break;
+      }
+    }
+    
+    drawdisplay(enemy);
+    player_flags.push("in combat");
+  }
+  let nombres = ["error"]
+  let azares = ["error"] //I know.
+  
+  if (area == "forest_1") {//starting forest, next to town
+    nombres = ["hog","wolf","boar"]
+    azares = [0.65,0.25,0.1]
+    niveles = [5,7,8]
+    getenemy(nombres,azares,niveles);
+  }
+}
+
 function activateButton() {
   //TODO: redraw the inv & eq on page load to saturate the last boxes
   let mx = document.getElementById("x").innerHTML;
@@ -365,7 +505,6 @@ function activateButton() {
   let invtpad = document.getElementById("invtpad").innerHTML;
   let eqlpad = document.getElementById("eqlpad").innerHTML;
   let eqtpad = document.getElementById("eqtpad").innerHTML;
-  //let invlength = document.getElementById("invlen")
   let b = 4;
   let d = 30;
   //onclick logic
@@ -380,7 +519,6 @@ function activateButton() {
     if (inv [2] [hovering] != undefined) {
         //code for equipping items
         if (equippable_tags.some(m=>m.includes(inv [1] [hovering]))) { //is the item equippable?
-          //document.getElementById("debug").innerHTML = equippable_tags.some(m=>m.includes(inv [1] [hovering]));
 
           for (let i=1;i<=12; i++) { //which slot does the item go in? 
             
@@ -417,7 +555,7 @@ function activateButton() {
               inv[2].splice(hovering,1);
               inv[3].splice(hovering,1);            
             }
-            
+            updatestats();
         
         } 
         else if (consumable_tags.some(m=>m.includes(inv[1][hovering]))) {//can it be eaten?
@@ -542,15 +680,41 @@ function activateButton() {
     let mh = Math.ceil((my-430)/25);
     document.getElementById("mouseh").innerHTML=mh;
     document.getElementById("debug").innerHTML=mh;
-    if (navigation[2][mh] == "travel") {
-      player_location = navigation[3][mh];
-      for (let i = 1;i<navigation[1].length;i++){
-        navigation[1][i] = undefined;
-        navigation[2][i] = undefined;
-        navigation[3][i] = undefined;
+    if (navigation[2][mh] == "travel") { //moves the player to a new location
+      player_location = navigation[3][mh]; // this is the new location
+      document.getElementById("room_name").innerHTML = player_location
+      //clear the button options
+      navigation[1].splice(1,navigation[1].length);
+      navigation[2].splice(1,navigation[2].length);
+      navigation[3].splice(1,navigation[3].length);
+      if (player_location == "town"){
+        document.getElementById("room_desc").innerHTML = "A bustling town"
+        navigation[1].push("go to your house","go into the forest","throw a coin into the fountain")
+        navigation[2].push("travel","travel","fountain_coin")
+        navigation[3].push("house","forest",undefined)
+      } else if (player_location == "house") {
+        document.getElementById("room_desc").innerHTML = "Your house"
+        navigation[1].push("go outside","go to bed")
+        navigation[2].push("travel","sleep")
+        navigation[3].push("town",undefined)
+      } else if (player_location == "forest") {
+        document.getElementById("room_desc").innerHTML = "A tranquil forest"
+        navigation[1].push("return to town","go hunting")
+        navigation[2].push("travel","combat")
+        navigation[3].push("town","forest_1")
       }
-      //TODO: add new buttons
-    }
+    
+      
+      
+    } else if (navigation[2][mh] == "combat") {
+      let combat_loc = navigation[3][mh];
+      navigation[1].splice(1,navigation[1].length);
+      navigation[2].splice(1,navigation[2].length);
+      navigation[3].splice(1,navigation[3].length);
+      
+      startcombat(combat_loc);
+    } //TODO: add more button cases
+   
     drawnav();
   }
     //redraw (the relevant parts of) the screen
@@ -617,6 +781,7 @@ function draweq (d,b,h,w) {
   let lpad = 50;
   document.getElementById("eqtpad").innerHTML = tpad;
   document.getElementById("eqlpad").innerHTML = lpad;
+  /** equipment **/
   //draw the eq boxes
   for (let n=0; n<h; n++) {
     for (let i=0; i<w; i++) {
@@ -628,6 +793,12 @@ function draweq (d,b,h,w) {
       ctx.stroke();
     }
   }
+  
+  
+  /** stat box **/
+  ctx.rect(170,24,120,132);
+  ctx.rect(170,34,120,0); //draw a line
+  ctx.stroke();
 }
 
 function drawdisplay(newobj){
@@ -649,7 +820,8 @@ function drawdisplay(newobj){
 function drawnav(){
   var c = document.getElementById("nav");
   var ctx = c.getContext("2d");
-   ctx.clearRect(0, 0, 1000, 1000);
+   ctx.clearRect(0, 0, 300, 290);
+   ctx.beginPath();
   //room name XXX: it may be better to draw this after the description so the bottom line isn't drawn over by the desc box
   let rm_name = document.getElementById("room_name").innerHTML
   ctx.rect(-1,0,450,30);
@@ -671,9 +843,11 @@ function drawnav(){
   ctx.stroke();
   ctx.strokeStyle="DimGray";
   ctx.fillStyle = "black";
-  for (i=1;i<navigation[1].length;i++) {
+
+  for (let i=1;i<navigation[1].length;i++) {
     ctx.rect(-1,80+(i-1)*25,450,25);
     ctx.fillText(navigation[1][i],nav.width/2,90+(i-1)*25);
+      document.getElementById("debug").innerHTML = i
   }
   ctx.stroke();
 }
