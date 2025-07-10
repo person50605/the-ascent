@@ -70,7 +70,8 @@ inv = [ ["error"],
 //equpped items - 12 slots
 equipment = [["error"],
 //name
-["error","cloak","helmet","neck","mainhand","body","offhand","ring","legs","ring","bag","feet","hands"],
+//["error","cloak","helmet","neck","mainhand","body","offhand","ring","legs","ring","bag","feet","hands"],
+["error","none","none","none","none","none","none","none","none","none","none","none","none"],
 //quantity (useless, but here for consistency)
 ["error",1,1,1,1,1,1,1,1,1,1,1,1],
 //modifications
@@ -96,12 +97,18 @@ items = [ ["error"],
 "a small phial of a liquid that increases your strength"
 ],
 
+
 ];
 
 
 
   /**   item tags    **/
 
+equippable_stats = [ ["error"],
+["error","sword","shield"],
+["error","strength:2;dexterity:1","vitality:3"]
+
+];
   //(
 equippable_tags = [ ["error"],
 //cloak
@@ -187,9 +194,9 @@ duration: how many ticks the effect lasts, if effect is over time.
 //calculations that need to consider non-level-based stats (like damage dealt or recieved)
 player_stats = [ ["error"],
 //base stat names
-["error","level","strength","dexterity","intelligence","charisma","luck","vitality"], //1
+["error","level","strength","dexterity","intelligence","charisma","luck","vitality","experience"], //1
 //base stat values
-["error",1,10,10,10,10,10,10], //2
+["error",1,10,10,10,10,10,10,0], //2
 
 //derived stat names (calculated on base stats)
 //XXX: the health and mana values from this part of the array shouldn't be used
@@ -281,9 +288,42 @@ function updatestats() {
   }
   
   //equipment calculations
+  for (let i=1;i<=12;i++) {//check each equipped item
+    if (equipment[1][i] != "none") { //is there smth eq'd?
+      let on_num = 1
+      for (let j=1;equippable_stats[1][j] != equipment[1][i] && equippable_stats[1][j] != undefined;j++) {//what id num is it?
+        on_num = j
+      }
+      let eq_effect_store = equippable_stats[2][on_num]
+      let eq_effects = ["error"]
+      let eq_effect_params = [["error"]]
+      on_num = 0
+      for (let k=1;eq_effect_store[on_num] != undefined && k<10;k++){ //get all the effects
+        eq_effects.push("")
+        for (let l=0;eq_effect_store[on_num] != undefined && eq_effect_store[on_num] != ":";l++){//get effect name
+          
+          eq_effects[eq_effects.length-1] = eq_effects[eq_effects.length-1]+eq_effect_store[on_num]
+          document.getElementById("debug").innerHTML = eq_effects
+          on_num++
+        }
+        on_num++
+        
+        eq_effect_params.push("") //create a new effect space
+        for (let m=0;eq_effect_store[on_num] != ";";m++){//get all parameters
+          eq_effect_params[k].push("") //add a parameter space
+          for (let n=0;eq_effect_store[on_num] !=",";n++){
+            eq_effect_params[k][n] = eq_effect_params[k][n] + eq_effect_store[on_num] //edit the parameter
+            on_num++
+          }
+
+          on_num++
+        }
+        on_num++
+      }
+    }
+  }
   
   
-  //document.getElementById("debug").innerHTML = player_stats[5]
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
   let str = player_stats[2][2]
@@ -332,6 +372,7 @@ function updatestats() {
   //mana regen
   player_stats[6][6] = 1 + 1*int
   
+  //document.getElementById("debug").innerHTML = player_stats[5]
   draweq();
   
   
