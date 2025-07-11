@@ -59,9 +59,9 @@ enemy_status = [ ["error"],
 //inventory
 inv = [ ["error"],
 //names`
-["error","sword","shield","bread","health potion","phial of strength"],
+["error","sword","iron helmet","shield","bread","health potion","phial of strength"],
 //quantities of the items
-["error",1,2,1000,1000,1000],
+["error",1,2,3,1000,1000,1000],
 //modifications to the items (like xp or enchants)
 ["error"]
 ];
@@ -84,6 +84,7 @@ items = [ ["error"],
 //names
 ["error",
 "sword",
+"iron helmet",
 "shield",
 "bread",
 "health potion",
@@ -91,11 +92,12 @@ items = [ ["error"],
 //descriptions
 ["error",
 "A wooden sword",
+"A helmet made of iron",
 "A small buckler",
 "a loaf of bread",
 "a small potion that restores your health when imbibed.",
 "a small phial of a liquid that increases your strength"
-],
+]
 
 
 ];
@@ -105,8 +107,8 @@ items = [ ["error"],
   /**   item tags    **/
 
 equippable_stats = [ ["error"],
-["error","sword","shield"],
-["error","strength:2;dexterity:1","vitality:3"]
+["error","sword","iron helmet","shield"],
+["error","strength:2;dexterity:1","vitality:5","vitality:3"]
 
 ];
   //(
@@ -288,41 +290,57 @@ function updatestats() {
   }
   
   //equipment calculations
-  for (let i=1;i<=12;i++) {//check each equipped item
-    if (equipment[1][i] != "none") { //is there smth eq'd?
-      let on_num = 1
+
+  for (let i=1;i<=12;i++) {//check each equipped item  
+
+    if (equipment[1][i] != "none") { //is there smth eq'd? 
+
+      let on_num = 0
       for (let j=1;equippable_stats[1][j] != equipment[1][i] && equippable_stats[1][j] != undefined;j++) {//what id num is it?
+        //console.log(equippable_stats[1][j])
+        
         on_num = j
-      }
+      }    
+      
+      //XXX: the above for loop ends one run early, so on_num has to be incremented.
+      on_num++
       let eq_effect_store = equippable_stats[2][on_num]
       let eq_effects = ["error"]
       let eq_effect_params = [["error"]]
       on_num = 0
+      
       for (let k=1;eq_effect_store[on_num] != undefined && k<10;k++){ //get all the effects
         eq_effects.push("")
+        console.log(eq_effects)
+        
         for (let l=0;eq_effect_store[on_num] != undefined && eq_effect_store[on_num] != ":";l++){//get effect name
           
           eq_effects[eq_effects.length-1] = eq_effects[eq_effects.length-1]+eq_effect_store[on_num]
           document.getElementById("debug").innerHTML = eq_effects
           on_num++
-        }
+        }/**
         on_num++
         
         eq_effect_params.push("") //create a new effect space
         for (let m=0;eq_effect_store[on_num] != ";";m++){//get all parameters
-          eq_effect_params[k].push("") //add a parameter space
-          for (let n=0;eq_effect_store[on_num] !=",";n++){
+          eq_effect_params[k][eq_effect_params.length-1]="" //add a parameter space
+          for (let n=0;eq_effect_store[on_num] !="," && eq_effect_store[on_num] !=";";n++){
             eq_effect_params[k][n] = eq_effect_params[k][n] + eq_effect_store[on_num] //edit the parameter
             on_num++
           }
-
-          on_num++
+          if (eq_effect_store[on_num] !=";"){
+            on_num++
+          }
         }
+        **/
         on_num++
       }
+      console.log(eq_effects.length)
+       eq_effects.splice(eq_effects.length-1,1)
     }
-  }
-  
+   
+   }
+
   
   //translate the base stats into var names. Unnecessary, but helpful.
   let lvl = player_stats[2][1]
@@ -372,7 +390,6 @@ function updatestats() {
   //mana regen
   player_stats[6][6] = 1 + 1*int
   
-  //document.getElementById("debug").innerHTML = player_stats[5]
   draweq();
   
   
@@ -560,7 +577,6 @@ function activateButton() {
     if (inv [2] [hovering] != undefined) {
         //code for equipping items
         if (equippable_tags.some(m=>m.includes(inv [1] [hovering]))) { //is the item equippable?
-
           for (let i=1;i<=12; i++) { //which slot does the item go in? 
             
             if (equippable_tags[i].includes(inv [1] [hovering])) {
@@ -649,7 +665,6 @@ function activateButton() {
                     nom = nom + eat_effect[on_num]
                     on_num ++
                   }
-                  document.getElementById("debug").innerHTML = nom;
                   on_num++
                   player_status[3].push(nom);
                   nom = "";
@@ -661,7 +676,6 @@ function activateButton() {
                   
                   for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
                     nom = nom + eat_effect[on_num]
-                    document.getElementById("debug").innerHTML = nom;
                     on_num ++
                   }
                   //nested if statements for checking the effects
@@ -670,7 +684,6 @@ function activateButton() {
                     if (player_stats[2][1] > player_stats[5][2]) {//no overflow health
                       player_stats[2][1] = player_stats[5][2];
                     }
-                    document.getElementById("debug").innerHTML = player_stats[2][1];
                   }//TODO: add more cases for other effects
                   
                 }
@@ -720,7 +733,6 @@ function activateButton() {
   } else if (mx<761 && mx>469 && my<(429+navigation[1].length*25) && my>429) {//is it in the navigation panel; specifically, the buttons
     let mh = Math.ceil((my-430)/25);
     document.getElementById("mouseh").innerHTML=mh;
-    document.getElementById("debug").innerHTML=mh;
     if (navigation[2][mh] == "travel") { //moves the player to a new location
       player_location = navigation[3][mh]; // this is the new location
       document.getElementById("room_name").innerHTML = player_location
@@ -904,7 +916,6 @@ function drawnav(){
   for (let i=1;i<navigation[1].length;i++) {
     ctx.rect(-1,80+(i-1)*25,450,25);
     ctx.fillText(navigation[1][i],nav.width/2,90+(i-1)*25);
-    document.getElementById("debug").innerHTML = i;
   }
   ctx.stroke();
 }
