@@ -107,10 +107,16 @@ items = [ ["error"],
   /**   item tags    **/
 
 equippable_stats = [ ["error"],
-["error","sword","iron helmet","shield"],
-["error","strength:2;dexterity:1","vitality:5","vitality:3"]
+["error","sword","shield","iron helmet"],
+["error","strength:2;dexterity:1","vitality:3","vitality:5"]
 
 ];
+
+
+
+
+
+
   //(
 equippable_tags = [ ["error"],
 //cloak
@@ -198,7 +204,7 @@ player_stats = [ ["error"],
 //base stat names
 ["error","level","strength","dexterity","intelligence","charisma","luck","vitality","experience"], //1
 //base stat values
-["error",1,10,10,10,10,10,10,0], //2
+["error",1,10,10,10,10,10,10,50], //2
 
 //derived stat names (calculated on base stats)
 //XXX: the health and mana values from this part of the array shouldn't be used
@@ -295,66 +301,74 @@ function updatestats() {
 
     if (equipment[1][i] != "none") { //is there smth eq'd? 
 
-      let on_num = 0
+      let en_num = 0
       for (let j=1;equippable_stats[1][j] != equipment[1][i] && equippable_stats[1][j] != undefined;j++) {//what id num is it?
-        //console.log(equippable_stats[1][j])
-        
-        on_num = j
+        en_num = j
       }    
       
       //XXX: the above for loop ends one run early, so on_num has to be incremented.
-      on_num++
-      let eq_effect_store = equippable_stats[2][on_num]
+      en_num++
+      let eq_effect_store = equippable_stats[2][en_num]
       let eq_effects = ["error"]
       let eq_effect_params = [["error"]]
-      on_num = 0
+      let on_num = 0
       
-      for (let k=1;eq_effect_store[on_num] != undefined && k<10;k++){ //get all the effects
+      /** Effect finding **/
+      for (let k=1;eq_effect_store[on_num] != undefined;k++){ //get all the effects
         eq_effects.push("")
-        //console.log(eq_effects)
-        
         for (let l=0;eq_effect_store[on_num] != undefined && eq_effect_store[on_num] != ":";l++){//get effect name
-          
           eq_effects[eq_effects.length-1] = eq_effects[eq_effects.length-1]+eq_effect_store[on_num]
-
-          document.getElementById("debug").innerHTML = eq_effects
           on_num++
         }
-        //console.log(eq_effects)
+
         on_num++
         
         eq_effect_params.push(["error"]) //create a new effect space
-        //console.log(eq_effect_params)
         
         for (let m=0;eq_effect_store[on_num] != ";" && eq_effect_store[on_num] !=undefined;m++){//get all parameters
-          eq_effect_params[k][eq_effect_params.length-1]="" //add a parameter space
-          console.log("hello")
-          console.log(eq_effect_params[k][eq_effect_params.length])
+          eq_effect_params[k].push("") //add a parameter space
+
           
           for (let n=0;eq_effect_store[on_num] !="," && eq_effect_store[on_num] !=";" && eq_effect_store[on_num] != undefined;n++){
             eq_effect_params[k][eq_effect_params[k].length-1] = eq_effect_params[k][eq_effect_params[k].length-1] + eq_effect_store[on_num] //edit the parameter
             on_num++
           }
-          eq_effect_params[k].splice(1,k-1)
           if (eq_effect_store[on_num] !=";"){
             on_num++
           }
-       
+
         }
-        
         
         on_num++
       }
-      //Update stats here
-         console.log("")
-      console.log(eq_effects)
-      console.log(eq_effect_params)   
+      
+      
+      //Update stats
+      for (let k=1;k<=eq_effects.length;k++) {
+        if (player_stats[1].includes(eq_effects[k])){
+          let stat_num=""
+          for (let l=1;player_stats[1][l]!=eq_effects[k];l++){//is the effect a base stat?
+            stat_num = l+1
+          }
+          player_stats[5][stat_num] += parseInt(eq_effect_params[k][1])
+          
+        } else if (player_stats[2].includes(eq_effects[k])) {//Or a derived stat?
+          let stat_num=""
+          for (let l=1;player_stats[2][l]!=eq_effects[k];l++){
+            stat_num = l+1
+          }
+          player_stats[6][stat_num] += parseInt(eq_effect_params[k][1])
+        } //TODO: Add more cases
+        
+        //TODO: add case for offensive combat effects & store them in another list
+      }
+      
+      
+      //Clear for the next item
       eq_effects = ["error"]
       eq_effect_params = [["error"]]
-      //console.log(eq_effects.length)
-
-       eq_effects.splice(eq_effects.length-1,1)
-       
+      eq_effects.splice(eq_effects.length-1,1) // XXX: I think this is redundant
+      
     }
    
    }
@@ -408,7 +422,8 @@ function updatestats() {
   //mana regen
   player_stats[6][6] = 1 + 1*int
   
-  draweq();
+  draweq(30,4,4,3);
+  
   
   
 }
@@ -530,16 +545,17 @@ function tick() {
     player_mp=player_mmp;
   }
   
-  player_stats[6][1]=player_hp;
+  player_stats[6][1]=Math.round(player_hp*100)/100;
   player_stats[6][3]=player_regen;
   player_stats[6][2]=player_mhp;
-  player_stats[6][4]=player_mp;
+  player_stats[6][4]=Math.round(player_mp*100)/100;
   player_stats[6][6]=player_mp_regen;
   player_stats[6][5]=player_mmp;
 
   document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
-
+  
+  draweq(30,4,4,3);
   setTimeout(tick, 1000); //repeat the function
 }
 
@@ -845,7 +861,7 @@ function drawinv(d,b,h,w) {
 function draweq (d,b,h,w) {
   var c = document.getElementById("eq");
   var ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, 275, 200);
+  ctx.clearRect(0, 0, 500, 200);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
   ctx.fillStyle = "black";
@@ -871,19 +887,30 @@ function draweq (d,b,h,w) {
   /** stat box **/
   ctx.rect(170,24,180,132);
   ctx.rect(170,40,180,0); //draw a line
-  ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,44)
+  //hp & mp bar outlines
+  ctx.rect(178,44,80,12);
+  ctx.rect(262,44,80,12);
+  ctx.rect(188,64,155,6);
+  //fill the bars
+  ctx.fillStyle = "green"
+  ctx.fillRect(178,44,80*(player_stats[6][1]/player_stats[6][2]),12) //hp
+  ctx.fillStyle = "blue"
+  ctx.fillRect(262,44,80*(player_stats[6][4]/player_stats[6][5]),12) //mp
+  ctx.fillStyle = "magenta"
+  ctx.fillRect(188,64,155*(player_stats[2][8]/(player_stats[2][1]*100)),6) //xp
+  ctx.fillStyle = "black" //reset the colour
+  ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,54) //hp
+  ctx.fillText(player_stats[6][4]+"/"+player_stats[6][5],302,54) //mp XXX: Should this be white? or maybe some shade of gray?
   ctx.font="Arial 16px";
   ctx.strokeStyle="black";
   ctx.fillText("Stats",260,35);
-    //hp & mp bar outlines
-    ctx.rect(178,44,80,12);
-    ctx.rect(262,44,80,12);
-    //fill the bars
-    ctx.fillStyle = "green"
-    ctx.fillRect(178,44,80*(player_stats[6][1]/player_stats[6][2]),12)
-    ctx.fillStyle = "blue"
-    ctx.fillRect(262,44,80*(player_stats[6][1]/player_stats[6][2]),12)
-    ctx.fillStyle = "black" //reset the colour
+  //Base Stats
+  for (let i=2;i<player_stats[1].length-1;i++){
+     ctx.fillText(player_stats[1][i],194+55*(i-2)-165*Math.floor((i-2)/3),84+40*Math.floor((i-2)/3))
+  }
+ for (let i=2;i<=player_stats[5].length-1;i++){
+     ctx.fillText(player_stats[5][i],194+55*(i-2)-165*Math.floor((i-2)/3),104+40*Math.floor((i-2)/3))
+  }
 
   ctx.stroke();
 }
