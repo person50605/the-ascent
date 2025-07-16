@@ -888,28 +888,40 @@ function draweq (d,b,h,w) {
   ctx.rect(170,24,180,132);
   ctx.rect(170,40,180,0); //draw a line
   //hp & mp bar outlines
-  ctx.rect(178,44,80,12);
-  ctx.rect(262,44,80,12);
-  ctx.rect(188,64,155,6);
+  ctx.rect(178,44,80,12); //hp
+  ctx.rect(262,44,80,12); //mp
+  //draw xp bar
+  ctx.moveTo(178, 60); 
+  ctx.lineTo(215, 60);
+  ctx.lineTo(225, 64);
+  ctx.lineTo(343, 64);
+  ctx.lineTo(343,72);
+  ctx.lineTo(178, 72);
+  ctx.lineTo(178, 60);
   //fill the bars
   ctx.fillStyle = "green"
   ctx.fillRect(178,44,80*(player_stats[6][1]/player_stats[6][2]),12) //hp
   ctx.fillStyle = "blue"
   ctx.fillRect(262,44,80*(player_stats[6][4]/player_stats[6][5]),12) //mp
   ctx.fillStyle = "magenta"
-  ctx.fillRect(188,64,155*(player_stats[2][8]/(player_stats[2][1]*100)),6) //xp
+  ctx.fillRect(178,64,150*(player_stats[2][8]/(player_stats[2][1]*100)),6) //xp
   ctx.fillStyle = "black" //reset the colour
   ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,54) //hp
   ctx.fillText(player_stats[6][4]+"/"+player_stats[6][5],302,54) //mp XXX: Should this be white? or maybe some shade of gray?
-  ctx.font="Arial 16px";
+  
   ctx.strokeStyle="black";
+  ctx.font="Arial 16px";
   ctx.fillText("Stats",260,35);
+  ctx.font="Arial 8px";
+  ctx.textAlign = "left";
+  ctx.fillText("Lv:"+player_stats[2][1],180,70);
+  ctx.textAlign = "center";
   //Base Stats
   for (let i=2;i<player_stats[1].length-1;i++){
-     ctx.fillText(player_stats[1][i],194+55*(i-2)-165*Math.floor((i-2)/3),84+40*Math.floor((i-2)/3))
+     ctx.fillText(player_stats[1][i],194+55*(i-2)-165*Math.floor((i-2)/3),84+40*Math.floor((i-2)/3));
   }
  for (let i=2;i<=player_stats[5].length-1;i++){
-     ctx.fillText(player_stats[5][i],194+55*(i-2)-165*Math.floor((i-2)/3),104+40*Math.floor((i-2)/3))
+     ctx.fillText(player_stats[5][i],194+55*(i-2)-165*Math.floor((i-2)/3),104+40*Math.floor((i-2)/3));
   }
 
   ctx.stroke();
