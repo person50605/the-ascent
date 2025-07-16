@@ -311,32 +311,50 @@ function updatestats() {
       
       for (let k=1;eq_effect_store[on_num] != undefined && k<10;k++){ //get all the effects
         eq_effects.push("")
-        console.log(eq_effects)
+        //console.log(eq_effects)
         
         for (let l=0;eq_effect_store[on_num] != undefined && eq_effect_store[on_num] != ":";l++){//get effect name
           
           eq_effects[eq_effects.length-1] = eq_effects[eq_effects.length-1]+eq_effect_store[on_num]
+
           document.getElementById("debug").innerHTML = eq_effects
           on_num++
-        }/**
+        }
+        //console.log(eq_effects)
         on_num++
         
-        eq_effect_params.push("") //create a new effect space
-        for (let m=0;eq_effect_store[on_num] != ";";m++){//get all parameters
+        eq_effect_params.push(["error"]) //create a new effect space
+        //console.log(eq_effect_params)
+        
+        for (let m=0;eq_effect_store[on_num] != ";" && eq_effect_store[on_num] !=undefined;m++){//get all parameters
           eq_effect_params[k][eq_effect_params.length-1]="" //add a parameter space
-          for (let n=0;eq_effect_store[on_num] !="," && eq_effect_store[on_num] !=";";n++){
-            eq_effect_params[k][n] = eq_effect_params[k][n] + eq_effect_store[on_num] //edit the parameter
+          console.log("hello")
+          console.log(eq_effect_params[k][eq_effect_params.length])
+          
+          for (let n=0;eq_effect_store[on_num] !="," && eq_effect_store[on_num] !=";" && eq_effect_store[on_num] != undefined;n++){
+            eq_effect_params[k][eq_effect_params[k].length-1] = eq_effect_params[k][eq_effect_params[k].length-1] + eq_effect_store[on_num] //edit the parameter
             on_num++
           }
+          eq_effect_params[k].splice(1,k-1)
           if (eq_effect_store[on_num] !=";"){
             on_num++
           }
+       
         }
-        **/
+        
+        
         on_num++
       }
-      console.log(eq_effects.length)
+      //Update stats here
+         console.log("")
+      console.log(eq_effects)
+      console.log(eq_effect_params)   
+      eq_effects = ["error"]
+      eq_effect_params = [["error"]]
+      //console.log(eq_effects.length)
+
        eq_effects.splice(eq_effects.length-1,1)
+       
     }
    
    }
