@@ -41,6 +41,8 @@ player_status = [ ["error"],
 //potency
 ["error"],
 //duration (remaining)
+["error"],
+//source (you can't have the same effect from the same source more than once at a time)
 ["error"]
 
 ];
@@ -51,6 +53,8 @@ enemy_status = [ ["error"],
 //potency
 ["error"],
 //duration (remaining)
+["error"],
+//source
 ["error"]
 
 ];
@@ -286,14 +290,14 @@ function updatestats() {
       mstatus[i][j]=k;
     }
   }
-  for (let i=1; i<=6; i++) {//check for each -- base -- stat
+  for (let i=1; i<player_stats[1].length; i++) {//check for each -- base -- stat
 
     for (let l=1;mstatus[1].includes(player_stats[1][i]);l++) {
       let k=1;
       for (let j=1;player_stats[1][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
         k=j;
       }
-    player_stats[5][i]+=parseInt(mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
+    player_stats[5][i]+=parseInt(mstatus[2][k]*100)/100; //round to the hundredth
     mstatus[1].splice(k,1);
     mstatus[2].splice(k,1);
     mstatus[3].splice(k,1);
@@ -473,14 +477,28 @@ function update_estats() {
       mstatus[i][j]=k;
     }
   }
-  for (let i=1; i<=6; i++) {//check for each -- base -- stat
+  for (let i=1; i<enemy_stats[1].length; i++) {//check for each -- base -- stat
 
     for (let l=1;mstatus[1].includes(enemy_stats[1][i]);l++) {
       let k=1;
       for (let j=1;enemy_stats[1][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
         k=j;
       }
-    enemy_stats[5][i]+=parseInt(mstatus[2][k]); //the statuses are stored in strings, so they need to be changed to ints
+    enemy_stats[5][i]+=parseInt(mstatus[2][k]*100)/100; //the statuses are stored in strings, so they need to be changed to ints
+    mstatus[1].splice(k,1);
+    mstatus[2].splice(k,1);
+    mstatus[3].splice(k,1);
+    } 
+  }
+  
+  for (let i=1; i<enemy_stats[3].length; i++) {//check for each -- derived -- stat
+
+    for (let l=1;mstatus[1].includes(enemy_stats[3][i]);l++) {
+      let k=1;
+      for (let j=1;enemy_stats[3][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
+        k=j;
+      }
+    enemy_stats[6][i]+=parseInt(mstatus[2][k]*100)/100; //rounds to the nearest hundredth
     mstatus[1].splice(k,1);
     mstatus[2].splice(k,1);
     mstatus[3].splice(k,1);
@@ -766,26 +784,51 @@ function activateButton() {
                 }
                 
                 if (effect_type == "t") {//is the effect over time?
-                  on_num++
-                  player_status[1].push(nom);
-                  nom = "";
-                  for (let i = 0; eat_effect[on_num] != ","; i++) {//read the potency
-                    nom = nom + eat_effect[on_num]
+                  if (player_status[4].includes(inv[1][hovering])) {
+                    let foo = undefined
+                    for (let i=0;player_status[4][i]!=inv[1][hovering];i++) {
+                      foo = i
+                    }
+                    foo++
+                    for (let i = 0; eat_effect[on_num] != ","; i++) {//skip the potency
+                      on_num ++
+                    }
+                      
                     on_num ++
+                    nom = "";
+                    
+                    for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined; i++) {//read the duration
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                    
+                    player_status[3][foo] += parseInt(nom)
+                    
+                    
+                    
+                  }else {
+                  
+                    on_num++
+                    player_status[1].push(nom);
+                    player_status[4].push(inv[1][hovering])
+                    nom = "";
+                    for (let i = 0; eat_effect[on_num] != ","; i++) {//read the potency
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                      
+                    on_num += 1;
+                    player_status[2].push(nom);
+                    nom = "";
+                    
+                    for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined; i++) {//read the duration
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                    on_num++
+                    player_status[3].push(nom);
+                    nom = "";
                   }
-                  
-                  on_num += 1;
-                  player_status[2].push(nom);
-                  nom = "";
-                  
-                  for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined; i++) {//read the duration
-                    nom = nom + eat_effect[on_num]
-                    on_num ++
-                  }
-                  on_num++
-                  player_status[3].push(nom);
-                  nom = "";
-                  
                 } else if (effect_type == "i") {//is the effect instant?
                 
                   effect_name = nom;
