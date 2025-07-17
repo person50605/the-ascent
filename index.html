@@ -108,7 +108,7 @@ items = [ ["error"],
 
 equippable_stats = [ ["error"],
 ["error","sword","shield","iron helmet"],
-["error","strength:2;dexterity:1","vitality:3","vitality:5"]
+["error","strength:2;dexterity:1","vitality:3;defence:10","vitality:5;defence:5"]
 
 ];
 
@@ -208,9 +208,9 @@ player_stats = [ ["error"],
 
 //derived stat names (calculated on base stats)
 //XXX: the health and mana values from this part of the array shouldn't be used
-["error","health","max health","health regen","mana","max mana","mana regen"], //3
+["error","health","max health","health regen","mana","max mana","mana regen","defence"], //3
 //derived stat values
-["error",100,100,1,50,50,1], //4
+["error",100,100,1,50,50,1,1], //4
 
 //modded stats
 
@@ -218,7 +218,7 @@ player_stats = [ ["error"],
 ["error",1,10,10,10,10,10,10], //5
 
 //derived stat values (based on modded stats)
-["error",100,100,1,50,50,1] //6
+["error",100,100,1,50,50,1,1] //6
 
 ];
   //)
@@ -229,13 +229,13 @@ enemy_stats = [ ["error"],
 ["error","level","strength","dexterity","intelligence","luck","vitality"], //1  enemies don't have cha
 ["error",1,10,10,10,10,10], //2
 
-["error","health","max health","health regen","mana","max mana","mana regen"], //3
-["error",100,100,1,50,50,1] //4
+["error","health","max health","health regen","mana","max mana","mana regen","defence"], //3
+["error",100,100,1,50,50,1,1], //4
 
 //mstats
 ["error",1,10,10,10,10,10], //5
 
-["error",100,100,1,50,50,1] //6
+["error",100,100,1,50,50,1,1] //6
 ]
   //)
   
@@ -271,15 +271,11 @@ function updatestats() {
   for (let i=1;i<=player_stats[5].length-1;i++){//reset modded stats
       player_stats[5][i]=player_stats[2][i]
   }
-    for (let i=1;i<=player_stats[6].length-1;i++){//reset modded derived stats
-      if (i!=1 && i!=4){
+    for (let i=1;i<=player_stats[6].length-1;i++){//set modded derived stats to 0
+      if (i!=1 && i!=4){//but don't set hp & mp to 0
       player_stats[6][i]=0
       }
   }
-  
-  
-
-  
   
   //Status calculations
   let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
@@ -432,6 +428,8 @@ function updatestats() {
   player_stats[6][5] += 5*lvl + 5*int
   //mana regen
   player_stats[6][6] += 1 + 1*int
+  //defence
+  player_stats[6][7] += Math.round((1 + vit/20)*10)/10
   
   draweq(30,4,4,3);
   
@@ -443,6 +441,12 @@ function update_estats() {
    for (let i=1;i<=enemy_stats[5].length-1;i++){//reset modded stats
       enemy_stats[5][i]=enemy_stats[2][i]
   }
+  for (let i=1;i<=enemy_stats[6].length-1;i++){//set modded derived stats to 0
+    if (i!=1 && i!=4){//but don't set hp & mp to 0
+      enemy_stats[6][i]=0
+    }
+  }
+
   //Status calculations
   let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
@@ -450,7 +454,7 @@ function update_estats() {
     let k = "error";
     for (let j=0;j<enemy_status[3].length;j++){
       k=enemy_status[i][j];
-      enemy_mstatus[i][j]=k;
+      mstatus[i][j]=k;
     }
   }
   for (let i=1; i<=6; i++) {//check for each -- base -- stat
@@ -460,7 +464,7 @@ function update_estats() {
       for (let j=1;enemy_stats[1][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
         k=j;
       }
-    enemy_stats[5][i]+=parseInt(mstatus[2][k]); //sometimes, the integers randomly get changed to strings. Not sure why.
+    enemy_stats[5][i]+=parseInt(mstatus[2][k]); //the statuses are stored in strings, so they need to be changed to ints
     mstatus[1].splice(k,1);
     mstatus[2].splice(k,1);
     mstatus[3].splice(k,1);
@@ -474,9 +478,8 @@ function update_estats() {
   let str = enemy_stats[2][2]
   let dex = enemy_stats[2][3]
   let int = enemy_stats[2][4]
-  let cha = enemy_stats[2][5]
-  let lck = enemy_stats[2][6]
-  let vit = enemy_stats[2][7]
+  let lck = enemy_stats[2][5]
+  let vit = enemy_stats[2][6]
   /**
    Derived stats: hp, mhp, hp regen, mana, max mana, mana regen
     Subject to rebalancing.
@@ -489,7 +492,7 @@ function update_estats() {
   enemy_stats[4][3] = 1 + 0.1*vit
   //(mana)
   //max mana
-  enemy_stats[4][5] = 5*lvl + 10*int
+  enemy_stats[4][5] = 5*lvl + 5*int
   //mana regen
   enemy_stats[4][6] = 1 + 1*int
   
@@ -498,9 +501,8 @@ function update_estats() {
   str = enemy_stats[5][2]
   dex = enemy_stats[5][3]
   int = enemy_stats[5][4]
-  cha = enemy_stats[5][5]
-  lck = enemy_stats[5][6]
-  vit = enemy_stats[5][7]
+  lck = enemy_stats[5][5]
+  vit = enemy_stats[5][6]
   /**
    Derived stats: (hp,) mhp, hp regen, (mp,) max mp, mana regen
     Subject to rebalancing.
@@ -508,21 +510,20 @@ function update_estats() {
 
   //(health)
   //max health
-  enemy_stats[6][2] = 5*lvl + 10*vit
+  enemy_stats[6][2] += 5*lvl + 10*vit
   //health regen (per tick)
-  enemy_stats[6][3] = 1 + 0.1*vit
+  enemy_stats[6][3] += 1 + 0.1*vit
   //(mana)
   //max mana
-  enemy_stats[6][5] = 5*lvl + 10*int
+  enemy_stats[6][5] += 5*lvl + 5*int
   //mana regen
-  enemy_stats[6][6] = 1 + 1*int
-  
-  
+  enemy_stats[6][6] += 1 + 1*int
+  //defence
+  enemy_stats[6][7] += Math.round((1 + vit/20)*10)/10
   
   
   
 }
-
 
 function tick() {
   //Time controls & SBA's
@@ -534,11 +535,11 @@ function tick() {
       player_status[1].splice(i,1);
       player_status[2].splice(i,1);
       player_status[3].splice(i,1);
-      updatestats();
-      //recalculate stats here (preferably through calling a function)
+      //updatestats(); //already happening at the end of this function
     }
   }
   
+  //regen player hp & mp
   let player_hp=player_stats[6][1];
   let player_regen=player_stats[6][3];
   let player_mhp=player_stats[6][2];
@@ -556,16 +557,71 @@ function tick() {
     player_mp=player_mmp;
   }
   
+  
+  if (player_flags.includes("in combat")) { //regen enemy hp & mp
+    let enemy_hp=enemy_stats[6][1];
+    let enemy_regen=enemy_stats[6][3];
+    let enemy_mhp=enemy_stats[6][2];
+    let enemy_mp=enemy_stats[6][4];
+    let enemy_mp_regen=enemy_stats[6][6];
+    let enemy_mmp=enemy_stats[6][5];
+    enemy_hp+=enemy_regen;
+    if(enemy_hp>enemy_mhp) {
+
+      enemy_hp=enemy_mhp;
+    } else if(enemy_hp<=0) {
+      //TODO: Add enemy death code, probably just starting another battle
+    }
+    enemy_mp+=enemy_mp_regen;
+    if (enemy_mp>enemy_mmp){
+      enemy_mp=enemy_mmp;
+    }
+    
+    
+    
+    //do attacks
+    
+    let p_str = player_stats[5][2]
+    let p_def = player_stats[6][7]
+    if (p_def <=0){
+      p_def = 0.1
+    }
+    
+    let e_str = enemy_stats[5][2]
+    let e_def = enemy_stats[6][7]
+    if (e_def <=0){
+      e_def = 0.1
+    }
+    
+    player_hp -= e_str/p_def - p_def
+    enemy_hp -= p_str/e_def - e_def
+    
+    
+    
+    enemy_stats[6][1]=Math.round(enemy_hp*100)/100;
+    enemy_stats[6][3]=enemy_regen;
+    enemy_stats[6][2]=enemy_mhp;
+    enemy_stats[6][4]=Math.round(enemy_mp*100)/100;
+    enemy_stats[6][6]=enemy_mp_regen;
+    enemy_stats[6][5]=enemy_mmp;
+    
+    
+    
+    
+    drawdisplay();
+  }
+  
   player_stats[6][1]=Math.round(player_hp*100)/100;
   player_stats[6][3]=player_regen;
   player_stats[6][2]=player_mhp;
   player_stats[6][4]=Math.round(player_mp*100)/100;
   player_stats[6][6]=player_mp_regen;
   player_stats[6][5]=player_mmp;
-
+  
+  
   document.getElementById("status names").innerHTML = player_status[1];
   document.getElementById("statuses").innerHTML = player_status[3];
-  
+  updatestats();
   draweq(30,4,4,3);
   setTimeout(tick, 1000); //repeat the function
 }
@@ -573,7 +629,6 @@ function tick() {
 function startcombat(area) {
   
   function getenemy(names,chances,nmy_lvls) { //randomly picks an enemy from the provided list
-    let enemy = Math.random();
     let enemy_lvl = 1
     let azar = 0.00000000000000001;
     for (let i = 0;i<=nombres.length;i++){
@@ -584,19 +639,20 @@ function startcombat(area) {
         break;
       }
     }
-    
-    drawdisplay(enemy);
-    player_flags.push("in combat");
   }
   let nombres = ["error"]
   let azares = ["error"] //I know.
-  
+  let enemy = Math.random();
   if (area == "forest_1") {//starting forest, next to town
     nombres = ["hog","wolf","boar"]
     azares = [0.65,0.25,0.1]
     niveles = [5,7,8]
     getenemy(nombres,azares,niveles);
   }
+  
+  player_flags.push("in combat");
+  update_estats();
+  drawdisplay(enemy);
 }
 
 function activateButton() {
@@ -744,7 +800,8 @@ function activateButton() {
               inv[2].splice(hovering,1);
               inv[3].splice(hovering,1);    
           }
-
+        //updatestats();
+        //draweq(30,4,4,3);
         }
     }
       
@@ -873,7 +930,7 @@ function drawinv(d,b,h,w) {
 function draweq (d,b,h,w) {
   var c = document.getElementById("eq");
   var ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, 500, 200);
+  ctx.clearRect(0, 0, 450, 200);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
   ctx.fillStyle = "black";
@@ -894,8 +951,7 @@ function draweq (d,b,h,w) {
       ctx.stroke();
     }
   }
-  
-  
+
   /** stat box **/
   ctx.rect(170,24,180,132);
   ctx.rect(170,40,180,0); //draw a line
@@ -913,7 +969,7 @@ function draweq (d,b,h,w) {
   //fill the bars
   ctx.fillStyle = "green"
   ctx.fillRect(178,44,80*(player_stats[6][1]/player_stats[6][2]),12) //hp
-  ctx.fillStyle = "blue"
+  ctx.fillStyle = "CornflowerBlue"
   ctx.fillRect(262,44,80*(player_stats[6][4]/player_stats[6][5]),12) //mp
   ctx.fillStyle = "magenta"
   ctx.fillRect(178,60,150*(player_stats[2][8]/(player_stats[2][1]*100)),12) //xp
@@ -924,7 +980,7 @@ function draweq (d,b,h,w) {
   
   ctx.fillStyle = "black" //reset the colour
   ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,54) //hp
-  ctx.fillText(player_stats[6][4]+"/"+player_stats[6][5],302,54) //mp XXX: Should this be white? or maybe some shade of gray?
+  ctx.fillText(player_stats[6][4]+"/"+player_stats[6][5],302,54) //mp
   
   ctx.strokeStyle="black";
   ctx.font="Arial 16px";
@@ -947,18 +1003,42 @@ function draweq (d,b,h,w) {
 function drawdisplay(newobj){
   var c = document.getElementById("display");
   var ctx = c.getContext("2d");
-   ctx.clearRect(0, 0, 250, 250);
-   ctx.strokeStyle = "black";
-   ctx.font="10px Arial";
-   document.getElementById("disp_obj").innerHTML = newobj;
-   if (newobj != undefined) {
-
-   }
-   disp_obj =  document.getElementById("disp_obj").innerHTML;
-   //if (disp_obj != "nothing") {
-     ctx.fillText(disp_obj, 125,125);
-   //}
+  ctx.clearRect(0, 0, 250, 250);
+  ctx.strokeStyle = "black";
+  ctx.font="10px Arial";
+  if (newobj != undefined) { //XXX: Not sure what this is doing here
+    document.getElementById("disp_obj").innerHTML = newobj;
+  }
+  disp_obj =  document.getElementById("disp_obj").innerHTML;
+  //if (disp_obj != "nothing") {
+    ctx.fillText(disp_obj, 125,125);
+  //}
+  
+  if (player_flags.includes("in combat")) {
+    ctx.font = "10px Arial";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    
+    ctx.beginPath();
+    //hp & mp bar outlines
+    ctx.rect(50,44,80,12); //hp
+    ctx.rect(135,44,80,12); //mp
+    //fill the bars
+    ctx.fillStyle = "green"
+    ctx.fillRect(50,44,80*(enemy_stats[6][1]/enemy_stats[6][2]),12) //hp
+    ctx.fillStyle = "CornflowerBlue"
+    ctx.fillRect(135,44,80*(enemy_stats[6][4]/enemy_stats[6][5]),12) //mp
+    //numbers
+    ctx.fillStyle = "black";
+    ctx.fillText(enemy_stats[6][1]+"/"+enemy_stats[6][2],90,54) //hp
+    ctx.fillText(enemy_stats[6][4]+"/"+enemy_stats[6][5],175,54) //mp
+    ctx.textAlign = "left";
+    ctx.fillText("Lv:"+enemy_stats[2][1],50,70) //lvl XXX: level is going to be inconsistently referred to as lv & lvl
+    ctx.stroke();
+  }
 }
+
+
 
 function drawnav(){
   var c = document.getElementById("nav");
