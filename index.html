@@ -310,6 +310,7 @@ navigation = [["error"],
 
 
 player_location = "home";
+combat_location = "error";
 
 player_flags = [];
 
@@ -657,7 +658,12 @@ function tick() {
 
       enemy_hp=enemy_mhp;
     } else if(enemy_hp<=0) {
-      
+      enemies_killed++
+      if (enemies_killed>=enemy_kill_requirement){
+        //TODO: figure out what to put here
+      } else {
+        startcombat(combat_location,true);
+      }
       //TODO: Add enemy death code, probably just starting another battle
     }
     enemy_mp+=enemy_mp_regen;
@@ -717,7 +723,7 @@ function tick() {
 function setestats(enemy,level){
   let nmy_num = 0;
   enemy_stats[2][1] = level
-  
+
   for (let i=0;enemy_template_stats[i][0]!=enemy;i++){
     nmy_num = i
   }
@@ -736,11 +742,21 @@ function setestats(enemy,level){
       }
     }
   }
-
+  
 }
 
-function startcombat(area) {
-  
+function startcombat(area,continuing) {
+
+  if(!continuing){
+  combat_location = area
+  enemies_killed = 0
+  player_flags.push("in combat");
+  navigation[1].push("flee")
+  navigation[2].push("travel")
+  navigation[3].push(player_location)
+  navigation[4][1] = "flee"
+  }
+
   function getenemy(names,chances,nmy_lvls) { //randomly picks an enemy from the provided list
     
     let azar = 0.00000000000000001;
@@ -753,29 +769,29 @@ function startcombat(area) {
       }
     }
   }
+  
   let nombres = ["error"]
   let azares = ["error"] //I know.
   let enemy = Math.random();
   let enemy_lvl = 1
-  enemies_killed = 0
   if (area == "forest_1") {//starting forest, next to town
     nombres = ["hog","wolf","boar"]
     azares = [0.65,0.25,0.1]
     niveles = [5,7,8]
-    getenemy(nombres,azares,niveles);
     
     enemy_kill_requirement = 25
   }
   
-  player_flags.push("in combat");
-  navigation[1].push("flee")
-  navigation[2].push("travel")
-  navigation[3].push(player_location)
-  navigation[4][1] = "flee"
+  getenemy(nombres,azares,niveles);
+
   setestats(enemy,enemy_lvl);
   update_estats();
+  enemy_stats[6][1]=enemy_stats[6][2] //make sure it doesn't spawn with 0 hp
+  enemy_stats[6][4]=enemy_stats[6][5]
   drawdisplay(enemy);
 }
+
+
 
 function activateButton() {
   //TODO: redraw the inv & eq on page load to saturate the last boxes
@@ -936,7 +952,7 @@ function activateButton() {
                   }//TODO: add more cases for other effects
                   
                 }
-              }else if(eat_effect[on_num] == "e"){
+              }else if(eat_effect[on_num] == "e"){ //TODO: Add a cooldown to each item to prevent spamming
                 on_num+=2;
                 effect_type = eat_effect[on_num];
                 
@@ -1066,15 +1082,17 @@ function activateButton() {
     let mh = Math.ceil((my-430)/25);
     document.getElementById("mouseh").innerHTML=mh;
     if (navigation[2][mh] == "travel") { //moves the player to a new location
+     
       if (navigation[4][mh] =="flee") {
         let on_num = -1
-        for (let i=0;player_flags[i]!="in combat";i++) {
+        for (let i=0;player_flags[i]!="in combat" && i<=player_flags.length;i++) {
           on_num=i
         }
         on_num++
         player_flags.splice(on_num,1)
         drawdisplay("nothing");
       }
+
       player_location = navigation[3][mh]; // this is the new location
       document.getElementById("room_name").innerHTML = player_location
       //clear the button options
@@ -1101,12 +1119,12 @@ function activateButton() {
       
       
     } else if (navigation[2][mh] == "combat") {
-      let combat_loc = navigation[3][mh];
+      let foo = navigation[3][mh] //This line is necessary
       navigation[1].splice(1,navigation[1].length);
       navigation[2].splice(1,navigation[2].length);
       navigation[3].splice(1,navigation[3].length);
       
-      startcombat(combat_loc);
+      startcombat(foo,false);
     
     }//TODO: add more button cases
    
