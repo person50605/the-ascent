@@ -293,8 +293,6 @@ enemy_template_stats = [ ["error"],
 
   
   
-  
-  
 //this is updated as the player moves
 navigation = [["error"],
 //displayed names
@@ -302,7 +300,9 @@ navigation = [["error"],
 //button ids (names)
 ["error","travel","sleep"],
 //extra data (if needed)
-["error","town",undefined]
+["error","town",undefined],
+//more extra flags
+["error",undefined,undefined]
 ];
 
 
@@ -313,7 +313,8 @@ player_location = "home";
 
 player_flags = [];
 
-  
+enemies_killed = 0
+enemy_kill_requirement = 0
   
   
   
@@ -656,6 +657,7 @@ function tick() {
 
       enemy_hp=enemy_mhp;
     } else if(enemy_hp<=0) {
+      
       //TODO: Add enemy death code, probably just starting another battle
     }
     enemy_mp+=enemy_mp_regen;
@@ -735,7 +737,6 @@ function setestats(enemy,level){
     }
   }
 
-  console.log(enemy_stats)
 }
 
 function startcombat(area) {
@@ -756,14 +757,21 @@ function startcombat(area) {
   let azares = ["error"] //I know.
   let enemy = Math.random();
   let enemy_lvl = 1
+  enemies_killed = 0
   if (area == "forest_1") {//starting forest, next to town
     nombres = ["hog","wolf","boar"]
     azares = [0.65,0.25,0.1]
     niveles = [5,7,8]
     getenemy(nombres,azares,niveles);
+    
+    enemy_kill_requirement = 25
   }
   
   player_flags.push("in combat");
+  navigation[1].push("flee")
+  navigation[2].push("travel")
+  navigation[3].push(player_location)
+  navigation[4][1] = "flee"
   setestats(enemy,enemy_lvl);
   update_estats();
   drawdisplay(enemy);
@@ -1054,14 +1062,23 @@ function activateButton() {
   
     
   
-  } else if (mx<761 && mx>469 && my<(429+navigation[1].length*25) && my>429) {//is it in the navigation panel; specifically, the buttons
+  } else if (mx<761 && mx>469 && my<(429+navigation[1].length*25) && my>429) {//is it in the navigation panel; specifically, the buttons?
     let mh = Math.ceil((my-430)/25);
     document.getElementById("mouseh").innerHTML=mh;
     if (navigation[2][mh] == "travel") { //moves the player to a new location
+      if (navigation[4][mh] =="flee") {
+        let on_num = -1
+        for (let i=0;player_flags[i]!="in combat";i++) {
+          on_num=i
+        }
+        on_num++
+        player_flags.splice(on_num,1)
+        drawdisplay("nothing");
+      }
       player_location = navigation[3][mh]; // this is the new location
       document.getElementById("room_name").innerHTML = player_location
       //clear the button options
-      navigation[1].splice(1,navigation[1].length);
+      navigation[1].splice(1,navigation[1].length); //I believe the second parameter is unnecessary
       navigation[2].splice(1,navigation[2].length);
       navigation[3].splice(1,navigation[3].length);
       if (player_location == "town"){
@@ -1090,13 +1107,15 @@ function activateButton() {
       navigation[3].splice(1,navigation[3].length);
       
       startcombat(combat_loc);
-    } //TODO: add more button cases
+    
+    }//TODO: add more button cases
    
-    drawnav();
+    
   }
     //redraw (the relevant parts of) the screen
     drawinv(30,4,6,10);
     draweq(30,4,4,3);
+    drawnav();
 }
 
 function drawinv(d,b,h,w) {
@@ -1234,7 +1253,7 @@ function draweq (d,b,h,w) {
 function drawdisplay(newobj){
   var c = document.getElementById("display");
   var ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, 250, 250);
+  ctx.clearRect(0, 0, 300, 300);
   ctx.strokeStyle = "black";
   ctx.font="10px Arial";
   if (newobj != undefined) { //XXX: Not sure what this is doing here
@@ -1320,6 +1339,7 @@ function updateMousePos(event) {
   pageX.innerText = event.pageX;
   pageY.innerText = event.pageY;
 }
+
 //constant mouse tracking
 const pageX = document.getElementById("x");
 const pageY = document.getElementById("y");
