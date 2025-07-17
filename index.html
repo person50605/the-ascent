@@ -1055,8 +1055,18 @@ function draweq (d,b,h,w) {
  for (let i=2;i<=player_stats[5].length-1;i++){
      ctx.fillText(player_stats[5][i],194+55*(i-2)-165*Math.floor((i-2)/3),104+40*Math.floor((i-2)/3));
   }
-
   ctx.stroke();
+  //status circles
+  for (let i=1;i<player_status[1].length;i++){
+    ctx.beginPath();
+    ctx.arc(lpad+b+5+14*(i-1), tpad+(b+d)*4+10, 5, 0, 2 * Math.PI);
+    ctx.fillText(player_status[1][i],lpad+b+5+14*(i-1), tpad+(b+d)*4+13)//TODO: load image here
+    ctx.stroke();
+  }
+  //stop the annoying extra bold outline
+  ctx.beginPath();
+  ctx.stroke();
+  
 }
 
 function drawdisplay(newobj){
