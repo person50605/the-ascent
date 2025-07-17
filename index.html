@@ -271,6 +271,16 @@ function updatestats() {
   for (let i=1;i<=player_stats[5].length-1;i++){//reset modded stats
       player_stats[5][i]=player_stats[2][i]
   }
+    for (let i=1;i<=player_stats[6].length-1;i++){//reset modded derived stats
+      if (i!=1 && i!=4){
+      player_stats[6][i]=0
+      }
+  }
+  
+  
+
+  
+  
   //Status calculations
   let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
 
@@ -394,7 +404,7 @@ function updatestats() {
   player_stats[4][3] = 1 + 0.1*vit
   //(mana)
   //max mana
-  player_stats[4][5] = 5*lvl + 10*int
+  player_stats[4][5] = 5*lvl + 5*int
   //mana regen
   player_stats[4][6] = 1 + 1*int
   
@@ -413,14 +423,15 @@ function updatestats() {
 
   //(health)
   //max health
-  player_stats[6][2] = 5*lvl + 10*vit
+  player_stats[6][2] += 5*lvl + 10*vit
   //health regen (per tick)
-  player_stats[6][3] = 1 + 0.1*vit
+  player_stats[6][3] += 1 + 0.1*vit
   //(mana)
   //max mana
-  player_stats[6][5] = 5*lvl + 10*int
+
+  player_stats[6][5] += 5*lvl + 5*int
   //mana regen
-  player_stats[6][6] = 1 + 1*int
+  player_stats[6][6] += 1 + 1*int
   
   draweq(30,4,4,3);
   
@@ -704,8 +715,9 @@ function activateButton() {
                   nom = "";
                   
                 } else if (effect_type == "i") {//is the effect instant?
+                
                   effect_name = nom;
-                  on_num+=2;
+                  on_num++;
                   nom = "";
                   
                   for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
@@ -714,9 +726,9 @@ function activateButton() {
                   }
                   //nested if statements for checking the effects
                   if (effect_name == "health") {
-                    player_stats[2][1] += nom;
-                    if (player_stats[2][1] > player_stats[5][2]) {//no overflow health
-                      player_stats[2][1] = player_stats[5][2];
+                    player_stats[6][1] += parseInt(nom);
+                    if (player_stats[6][1] > player_stats[6][2]) {//no overflow health
+                      player_stats[6][1] = player_stats[6][2];
                     }
                   }//TODO: add more cases for other effects
                   
