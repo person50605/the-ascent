@@ -63,9 +63,9 @@ enemy_status = [ ["error"],
 //inventory
 inv = [ ["error"],
 //names`
-["error","sword","iron helmet","shield","bread","health potion","phial of strength"],
+["error","sword","iron helmet","shield","bread","health potion","phial of strength","fireball scroll"],
 //quantities of the items
-["error",1,2,3,1000,1000,1000],
+["error",1,2,3,1000,1000,1000,1000],
 //modifications to the items (like xp or enchants)
 ["error"]
 ];
@@ -183,9 +183,9 @@ equippable_tags = [ ["error"],
 
 consumable_tags = [ ["error"],
 //names
-["error","bread","health potion","phial of strength"],
+["error","bread","health potion","phial of strength","fireball scroll"],
 /**
-efects (target,type,effect:potency,duration) (effects are seperated by a dash (-))
+efects (target,type,effect:potency,duration) (effects are seperated by a semicolon)
 
 target: (s)elf or (e)nemy
 type: over (t)ime or (i)nstant
@@ -193,7 +193,7 @@ efect: name of the effect
 potency: how strong the effect is.
 duration: how many ticks the effect lasts, if effect is over time.
 **/
-["error","s,t,health regen:0.5,30","s,i,health:50","s,t,strength:1,100"]
+["error","s,t,health regen:0.5,30","s,i,health:50","s,t,strength:1,100","e,i,health:-30;e,t,burn:1,20"]
 
 ];
 
@@ -212,9 +212,9 @@ player_stats = [ ["error"],
 
 //derived stat names (calculated on base stats)
 //XXX: the health and mana values from this part of the array shouldn't be used
-["error","health","max health","health regen","mana","max mana","mana regen","defence"], //3
+["error","health","max health","health regen","mana","max mana","mana regen","defence","mdefence"], //3
 //derived stat values
-["error",100,100,1,50,50,1,1], //4
+["error",100,100,1,50,50,1,1,1], //4
 
 //modded stats
 
@@ -222,7 +222,7 @@ player_stats = [ ["error"],
 ["error",1,10,10,10,10,10,10], //5
 
 //derived stat values (based on modded stats)
-["error",100,100,1,50,50,1,1] //6
+["error",100,100,1,50,50,1,1,1] //6
 
 ];
   //)
@@ -233,15 +233,67 @@ enemy_stats = [ ["error"],
 ["error","level","strength","dexterity","intelligence","luck","vitality"], //1  enemies don't have cha
 ["error",1,10,10,10,10,10], //2
 
-["error","health","max health","health regen","mana","max mana","mana regen","defence"], //3
-["error",100,100,1,50,50,1,1], //4
+["error","health","max health","health regen","mana","max mana","mana regen","defence","mdefence"], //3
+//additional modded stats
+["error",100,100,1,50,50,1,1,1], //4
 
 //mstats
 ["error",1,10,10,10,10,10], //5
 
-["error",100,100,1,50,50,1,1] //6
+["error",100,100,1,50,50,1,1,1]//, //6
+
+//stats gained per level, note that the first entry should be 0
+//["error",0,0,0,0,0,0], //7
+//["error",0,0,0,0,0,0,0,0] //8
+
 ]
   //)
+  
+
+enemy_template_stats = [ ["error"],
+  /**
+  name
+  base stats ("level","strength","dexterity","intelligence","luck","vitality")
+  error
+  derived stats ("health","max health","health regen","mana","max mana","mana regen","defence","mdefence")
+  base stats per level
+  derived stats per level
+  **/
+  
+  
+["hog",
+
+["error",0,12,7,2,10,14], //1 i=2  2
+["error"], //2 i=3  don't read (3)
+["error",0,0,0,0,0,0,2,0], //3 i=4  4
+["error",0,2,1,0,0,0,2], //4 i=5  7
+["error",0,10,0,0,0,0,0.2,0] //5 i=6  8
+],
+
+["wolf",
+
+["error",0,11,15,5,10,10],
+["error"],
+["error",0,0,0,0,0,0,1,1],
+["error",0,1,3,0,0,1],
+["error",0,10,0.1,0,0,0,0,0]
+
+],
+
+["boar",
+
+["error",0,14,7,1,10,15],
+["error"],
+["error",0,20,0,0,0,0,3,0],
+["error",0,3,0,0,0,2],
+["error",0,10,0,0,0,0,0.3,0]
+]
+
+]
+
+  
+  
+  
   
 //this is updated as the player moves
 navigation = [["error"],
@@ -660,10 +712,36 @@ function tick() {
   setTimeout(tick, 1000); //repeat the function
 }
 
+function setestats(enemy,level){
+  let nmy_num = 0;
+  enemy_stats[2][1] = level
+  
+  for (let i=0;enemy_template_stats[i][0]!=enemy;i++){
+    nmy_num = i
+  }
+  nmy_num++
+
+  for(let i=2;i<=5;i++){
+    
+    if (i!=3){ //base stats
+      for(let j=1;j<enemy_template_stats[nmy_num][i-1].length;j++){
+        enemy_stats[i][j] = enemy_template_stats[nmy_num][i-1][j]
+        if (i==2){
+          enemy_stats[i][j] += enemy_template_stats[nmy_num][4][j]*level
+        } else if (i==4){
+          enemy_stats[i][j] += enemy_template_stats[nmy_num][5][j]*level
+        }
+      }
+    }
+  }
+
+  console.log(enemy_stats)
+}
+
 function startcombat(area) {
   
   function getenemy(names,chances,nmy_lvls) { //randomly picks an enemy from the provided list
-    let enemy_lvl = 1
+    
     let azar = 0.00000000000000001;
     for (let i = 0;i<=nombres.length;i++){
       azar += azares[i]
@@ -677,6 +755,7 @@ function startcombat(area) {
   let nombres = ["error"]
   let azares = ["error"] //I know.
   let enemy = Math.random();
+  let enemy_lvl = 1
   if (area == "forest_1") {//starting forest, next to town
     nombres = ["hog","wolf","boar"]
     azares = [0.65,0.25,0.1]
@@ -685,6 +764,7 @@ function startcombat(area) {
   }
   
   player_flags.push("in combat");
+  setestats(enemy,enemy_lvl);
   update_estats();
   drawdisplay(enemy);
 }
@@ -797,7 +877,7 @@ function activateButton() {
                     on_num ++
                     nom = "";
                     
-                    for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined; i++) {//read the duration
+                    for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined; i++) {//read the duration
                       nom = nom + eat_effect[on_num]
                       on_num ++
                     }
@@ -821,7 +901,7 @@ function activateButton() {
                     player_status[2].push(nom);
                     nom = "";
                     
-                    for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined; i++) {//read the duration
+                    for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined; i++) {//read the duration
                       nom = nom + eat_effect[on_num]
                       on_num ++
                     }
@@ -835,7 +915,7 @@ function activateButton() {
                   on_num++;
                   nom = "";
                   
-                  for (let i = 0; eat_effect[on_num] != "-" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
+                  for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
                     nom = nom + eat_effect[on_num]
                     on_num ++
                   }
@@ -848,7 +928,89 @@ function activateButton() {
                   }//TODO: add more cases for other effects
                   
                 }
-              }//elseif(){} //TODO: add case for targeting enemy
+              }else if(eat_effect[on_num] == "e"){
+                on_num+=2;
+                effect_type = eat_effect[on_num];
+                
+                on_num+=2;
+                
+              
+                for (let i = 0; eat_effect[on_num] != ":"; i++) {//read the effect name
+                  nom = nom + eat_effect[on_num]
+                  on_num ++
+                }
+                
+                if (effect_type == "t") {//is the effect over time?
+                  if (enemy_status[4].includes(inv[1][hovering])) {
+                    let foo = undefined
+                    for (let i=0;enemy_status[4][i]!=inv[1][hovering];i++) {
+                      foo = i
+                    }
+                    foo++
+                    for (let i = 0; eat_effect[on_num] != ","; i++) {//skip the potency
+                      on_num ++
+                    }
+                      
+                    on_num ++
+                    nom = "";
+                    
+                    for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined; i++) {//read the duration
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                    
+                    enemy_status[3][foo] += parseInt(nom)
+                    
+                    
+                    
+                  }else {
+                  
+                    on_num++
+                    enemy_status[1].push(nom);
+                    enemy_status[4].push(inv[1][hovering])
+                    nom = "";
+                    for (let i = 0; eat_effect[on_num] != ","; i++) {//read the potency
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                      
+                    on_num += 1;
+                    enemy_status[2].push(nom);
+                    nom = "";
+                    
+                    for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined; i++) {//read the duration
+                      nom = nom + eat_effect[on_num]
+                      on_num ++
+                    }
+                    on_num++
+                    enemy_status[3].push(nom);
+                    nom = "";
+                  }
+                } else if (effect_type == "i") {//is the effect instant?
+                
+                  effect_name = nom;
+                  on_num++;
+                  nom = "";
+                  
+                  for (let i = 0; eat_effect[on_num] != ";" && eat_effect[on_num] != undefined && i<=10; i++) {//read the potency
+                    nom = nom + eat_effect[on_num]
+                    on_num ++
+                  }
+                  //nested if statements for checking the effects
+                  if (effect_name == "health") {
+                    enemy_stats[6][1] += parseInt(nom);
+                    enemy_stats[6][1] = parseInt(enemy_stats[6][1]*100)/100
+                    if (enemy_stats[6][1] > enemy_stats[6][2]) {//no overflow health
+                      enemy_stats[6][1] = enemy_stats[6][2];
+                    }
+                  }//TODO: add more cases for other effects
+                  
+                } 
+                drawdisplay();
+              }
+              
+              
+              on_num++
             }
             
           }
@@ -1103,6 +1265,17 @@ function drawdisplay(newobj){
     ctx.fillText(enemy_stats[6][4]+"/"+enemy_stats[6][5],175,54) //mp
     ctx.textAlign = "left";
     ctx.fillText("Lv:"+enemy_stats[2][1],50,70) //lvl XXX: level is going to be inconsistently referred to as lv & lvl
+    ctx.stroke();
+    //status circles
+    ctx.textAlign = "center";
+    for (let i=1;i<enemy_status[1].length;i++){
+      ctx.beginPath();
+      ctx.arc(80+14*(i-1), 66, 5, 0, 2 * Math.PI);
+      ctx.fillText(enemy_status[1][i],80+14*(i-1), 70)//TODO: load image here
+      ctx.stroke();
+    }
+    //stop the annoying extra bold outline
+    ctx.beginPath();
     ctx.stroke();
   }
 }
