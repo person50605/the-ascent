@@ -904,7 +904,12 @@ function draweq (d,b,h,w) {
   ctx.fillStyle = "blue"
   ctx.fillRect(262,44,80*(player_stats[6][4]/player_stats[6][5]),12) //mp
   ctx.fillStyle = "magenta"
-  ctx.fillRect(178,64,150*(player_stats[2][8]/(player_stats[2][1]*100)),6) //xp
+  ctx.fillRect(178,60,150*(player_stats[2][8]/(player_stats[2][1]*100)),12) //xp
+  //clear the overflowing part of the bar
+  ctx.clearRect(216,60,165,1)
+  ctx.clearRect(217,61,174,1)
+  ctx.clearRect(220,62,173,1)
+  
   ctx.fillStyle = "black" //reset the colour
   ctx.fillText(player_stats[6][1]+"/"+player_stats[6][2],218,54) //hp
   ctx.fillText(player_stats[6][4]+"/"+player_stats[6][5],302,54) //mp XXX: Should this be white? or maybe some shade of gray?
