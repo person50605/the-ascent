@@ -278,8 +278,7 @@ function updatestats() {
   }
   
   //Status calculations
-  let mstatus = [["error"],["error","error"],["error","error"],["error","error"]];
-
+  let mstatus = [["error"],["error"],["error"],["error"]];
   for (let i=0;i<=3;i++){//load up the temp. list
     let k = "error";
     for (let j=0;j<player_status[3].length;j++){
@@ -300,6 +299,23 @@ function updatestats() {
     mstatus[3].splice(k,1);
     } 
   }
+    
+
+  for (let i=1; i<player_stats[3].length; i++) {//check for each -- derived -- stat
+
+    for (let l=1;mstatus[1].includes(player_stats[3][i]);l++) {
+      let k=1;
+      for (let j=1;player_stats[3][i] != mstatus[1][j] && j<=mstatus[1].length;j++) {//find the number of the status
+        k=j;
+      }
+    player_stats[6][i]+=parseInt(mstatus[2][k]*100)/100; //rounds to the nearest hundredth
+    mstatus[1].splice(k,1);
+    mstatus[2].splice(k,1);
+    mstatus[3].splice(k,1);
+    } 
+  }
+  
+  
   
   //equipment calculations
 
