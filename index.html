@@ -662,10 +662,10 @@ function tick() {
     if(enemy_hp>enemy_mhp) {
       enemy_hp=enemy_mhp;
     } else if(enemy_hp<=0) {
+      enemies_killed++
       if (enemies_killed>=enemy_kill_requirement){
         //TODO: figure out what to put here
       } else {
-        enemies_killed++
         startcombat(combat_location,true);
         //drawdisplay();
         document.getElementById("status names").innerHTML = player_status[1];
