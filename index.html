@@ -240,7 +240,8 @@ enemy_stats = [ ["error"],
 //mstats
 ["error",1,10,10,10,10,10], //5
 
-["error",100,100,1,50,50,1,1,1]//, //6
+["error",100,100,1,50,50,1,1,1],// //6
+[0] //, //7 (xp value)
 
 //stats gained per level, note that the first entry should be 0
 //["error",0,0,0,0,0,0], //7
@@ -258,6 +259,7 @@ enemy_template_stats = [ ["error"],
   derived stats ("health","max health","health regen","mana","max mana","mana regen","defence","mdefence")
   base stats per level
   derived stats per level
+  base xp value, xp value per level
   **/
   
   
@@ -267,7 +269,8 @@ enemy_template_stats = [ ["error"],
 ["error"], //2 i=3  don't read (3)
 ["error",0,0,0,0,0,0,2,0], //3 i=4  4
 ["error",0,2,1,0,0,0,2], //4 i=5  7
-["error",0,10,0,0,0,0,0.2,0] //5 i=6  8
+["error",0,10,0,0,0,0,0.2,0], //5 i=6  8
+[10,5] //6
 ],
 
 ["wolf",
@@ -276,7 +279,8 @@ enemy_template_stats = [ ["error"],
 ["error"],
 ["error",0,0,0,0,0,0,1,1],
 ["error",0,1,3,0,0,1],
-["error",0,10,0.1,0,0,0,0,0]
+["error",0,10,0.1,0,0,0,0,0],
+[25,5]
 
 ],
 
@@ -286,7 +290,8 @@ enemy_template_stats = [ ["error"],
 ["error"],
 ["error",0,20,0,0,0,0,3,0],
 ["error",0,3,0,0,0,2],
-["error",0,10,0,0,0,0,0.3,0]
+["error",0,10,0,0,0,0,0.3,0],
+[20,10]
 ]
 
 ]
@@ -655,16 +660,22 @@ function tick() {
     let enemy_mmp=enemy_stats[6][5];
     enemy_hp+=enemy_regen;
     if(enemy_hp>enemy_mhp) {
-
       enemy_hp=enemy_mhp;
     } else if(enemy_hp<=0) {
-      enemies_killed++
       if (enemies_killed>=enemy_kill_requirement){
         //TODO: figure out what to put here
       } else {
+        enemies_killed++
         startcombat(combat_location,true);
+        //drawdisplay();
+        document.getElementById("status names").innerHTML = player_status[1];
+        document.getElementById("statuses").innerHTML = player_status[3];
+        updatestats();
+        draweq(30,4,4,3);
+        setTimeout(tick, 1000); //repeat the function
+        return;
       }
-      //TODO: Add enemy death code, probably just starting another battle
+      
     }
     enemy_mp+=enemy_mp_regen;
     if (enemy_mp>enemy_mmp){
@@ -722,12 +733,13 @@ function tick() {
 
 function setestats(enemy,level){
   let nmy_num = 0;
-  enemy_stats[2][1] = level
+  enemy_stats[2][1] = level;
 
   for (let i=0;enemy_template_stats[i][0]!=enemy;i++){
     nmy_num = i
   }
   nmy_num++
+  enemy_stats[7][0] = enemy_template_stats[nmy_num][6][0] + (enemy_template_stats[nmy_num][6][1]*level)
 
   for(let i=2;i<=5;i++){
     
@@ -787,7 +799,8 @@ function startcombat(area,continuing) {
   setestats(enemy,enemy_lvl);
   update_estats();
   enemy_stats[6][1]=enemy_stats[6][2] //make sure it doesn't spawn with 0 hp
-  enemy_stats[6][4]=enemy_stats[6][5]
+  console.log(enemy_stats[6][1]+", "+enemy_stats[6][2])
+  enemy_stats[6][4]=enemy_stats[6][5] //or 0 mana
   drawdisplay(enemy);
 }
 
@@ -1285,9 +1298,13 @@ function drawdisplay(newobj){
   if (player_flags.includes("in combat")) {
     ctx.font = "10px Arial";
     ctx.fillStyle = "black";
-    ctx.textAlign = "center";
-    
+    ctx.textAlign = "right";
+
     ctx.beginPath();
+    //kill count & requirement
+    ctx.fillText("Kills: "+enemies_killed+"/"+enemy_kill_requirement,289,288) //lvl XXX: level is going to be inconsistently referred to as lv & lvl
+    ctx.textAlign = "center";
+
     //hp & mp bar outlines
     ctx.rect(50,44,80,12); //hp
     ctx.rect(135,44,80,12); //mp
