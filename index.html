@@ -683,7 +683,7 @@ function tick() {
     }
     
     
-    
+
     //do attacks
     //TODO: Turn this into a function
     let p_str = player_stats[5][2]
@@ -708,6 +708,7 @@ function tick() {
     if(p_dmg<0){
       p_dmg=0
     }
+  
     enemy_hp -= p_dmg
     
     console.log(p_dmg-enemy_regen)
@@ -738,6 +739,7 @@ function tick() {
   updatestats();
   draweq(30,4,4,3);
   setTimeout(tick, 1000); //repeat the function
+
 }
 
 function setestats(enemy,level){
@@ -1336,6 +1338,7 @@ function drawdisplay(newobj){
       ctx.fillText(enemy_status[1][i],80+14*(i-1), 70)//TODO: load image here
       ctx.stroke();
     }
+    
     //stop the annoying extra bold outline
     ctx.beginPath();
     ctx.stroke();
@@ -1343,7 +1346,11 @@ function drawdisplay(newobj){
 }
 
 function n_percent_chance(percent){
-  if(Math.random())
+  if(Math.random(1,100)<=percent){
+    return true
+  } else{
+    return false
+  }
 }
 
 function drawnav(){
