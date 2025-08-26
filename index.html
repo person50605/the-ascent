@@ -643,7 +643,25 @@ function tick() {
   if(player_hp>player_mhp) {
     player_hp=player_mhp;
   } else if(player_hp<=0) {
-    //TODO: Add death code
+    //remove combat flag
+    let on_num = -1
+    for (let i=0;player_flags[i]!="in combat" && i<=player_flags.length;i++) {
+      on_num=i
+    }
+    on_num++
+    player_flags.splice(on_num,1)
+    //send home
+    player_location = "house"
+    
+    document.getElementById("room_name").innerHTML = player_location
+    document.getElementById("room_desc").innerHTML = "Your house"
+    navigation[1] = "go outside","go to bed"
+    navigation[2] = "travel","sleep"
+    navigation[3] = "town",undefined
+    //redraw screen
+    drawdisplay("nothing")
+    drawnav()
+    
   }
   player_mp+=player_mp_regen;
   if (player_mp>player_mmp){
@@ -1297,11 +1315,11 @@ function drawdisplay(newobj){
   ctx.clearRect(0, 0, 300, 300);
   ctx.strokeStyle = "black";
   ctx.font="10px Arial";
-  if (newobj != undefined) { //XXX: Not sure what this is doing here
+  if (newobj != undefined) { //keep the current object if there's no newobj parameter
     document.getElementById("disp_obj").innerHTML = newobj;
   }
   disp_obj =  document.getElementById("disp_obj").innerHTML;
-  //if (disp_obj != "nothing") {
+  //if (disp_obj != "nothing") { //XXX: when images are implemented, activate this code
     ctx.fillText(disp_obj, 125,125);
   //}
   
