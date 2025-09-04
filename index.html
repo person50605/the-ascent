@@ -22,6 +22,7 @@
   <div id="debug"> debug</div>
   <div id="status names"> helloo</div>
   <div id="statuses"> helllo</div>
+  <div id="fps">fps: </div>
 
 
 <!-- functions and vars -->
@@ -63,9 +64,9 @@ enemy_status = [ ["error"],
 //inventory
 inv = [ ["error"],
 //names`
-["error","sword","iron helmet","shield","bread","health potion","phial of strength","fireball scroll"],
+["error","sword","iron helmet","shield","bread","health potion","phial of strength","fireball scroll","ouch potion"],
 //quantities of the items
-["error",1,2,3,1000,1000,1000,1000],
+["error",1,2,3,1000,1000,1000,1000,999],
 //modifications to the items (like xp or enchants)
 ["error"]
 ];
@@ -92,7 +93,8 @@ items = [ ["error"],
 "shield",
 "bread",
 "health potion",
-"phial of strength"],
+"phial of strength",
+"ouch potion"],
 //descriptions
 ["error",
 "A wooden sword",
@@ -100,7 +102,8 @@ items = [ ["error"],
 "A small buckler",
 "a loaf of bread",
 "a small potion that restores your health when imbibed.",
-"a small phial of a liquid that increases your strength"
+"a small phial of a liquid that increases your strength",
+"instant death"
 ]
 
 
@@ -183,7 +186,7 @@ equippable_tags = [ ["error"],
 
 consumable_tags = [ ["error"],
 //names
-["error","bread","health potion","phial of strength","fireball scroll"],
+["error","bread","health potion","phial of strength","fireball scroll","ouch potion"],
 /**
 efects (target,type,effect:potency,duration) (effects are seperated by a semicolon)
 
@@ -193,7 +196,7 @@ efect: name of the effect
 potency: how strong the effect is.
 duration: how many ticks the effect lasts, if effect is over time.
 **/
-["error","s,t,health regen:0.5,30","s,i,health:50","s,t,strength:1,100","e,i,health:-30;e,t,burn:1,20"]
+["error","s,t,health regen:0.5,30","s,i,health:50","s,t,strength:1,100","e,i,health:-30;e,t,burn:1,20","s,i,health:-999"]
 
 ];
 
@@ -249,7 +252,7 @@ enemy_stats = [ ["error"],
 
 ]
   //)
-  
+
 
 enemy_template_stats = [ ["error"],
   /**
@@ -322,6 +325,7 @@ player_flags = [];
 enemies_killed = 0
 enemy_kill_requirement = 0
   
+fps = 0;
   
   
 //declare functions
@@ -642,32 +646,11 @@ function tick() {
   player_hp+=player_regen;
   if(player_hp>player_mhp) {
     player_hp=player_mhp;
-  } else if(player_hp<=0) {
-    //remove combat flag
-    let on_num = -1
-    for (let i=0;player_flags[i]!="in combat" && i<=player_flags.length;i++) {
-      on_num=i
-    }
-    on_num++
-    player_flags.splice(on_num,1)
-    //send home
-    player_location = "house"
-    
-    document.getElementById("room_name").innerHTML = player_location
-    document.getElementById("room_desc").innerHTML = "Your house"
-    navigation[1] = "go outside","go to bed"
-    navigation[2] = "travel","sleep"
-    navigation[3] = "town",undefined
-    //redraw screen
-    drawdisplay("nothing")
-    drawnav()
-    
   }
   player_mp+=player_mp_regen;
   if (player_mp>player_mmp){
     player_mp=player_mmp;
   }
-  
   
   if (player_flags.includes("in combat")) { //regen enemy hp & mp
     let enemy_hp=enemy_stats[6][1];
@@ -729,8 +712,6 @@ function tick() {
   
     enemy_hp -= p_dmg
     
-    console.log(p_dmg-enemy_regen)
-    console.log(e_dmg-player_regen)
     enemy_stats[6][1]=Math.round(enemy_hp*100)/100;
     enemy_stats[6][3]=enemy_regen;
     enemy_stats[6][2]=enemy_mhp;
@@ -743,7 +724,30 @@ function tick() {
     
     drawdisplay();
   }
-  
+  if(player_hp<=0) {
+    player_hp = 0
+    
+    //remove combat flag
+    let on_num = -1
+    for (let i=0;player_flags[i]!="in combat" && i<=player_flags.length;i++) {
+      on_num=i
+    }
+    on_num++
+    player_flags.splice(on_num,1)
+    //send home
+    player_location = "house"
+    document.getElementById("room_name").innerHTML = player_location
+    document.getElementById("room_desc").innerHTML = "Your house"
+    navigation[1] = ["error","go outside","go to bed"]
+    navigation[2] = ["error","travel","sleep"]
+    navigation[3] = ["error","town",undefined]
+    //redraw screen
+    drawdisplay("nothing")
+    drawinv(30,4,6,10);
+    draweq(30,4,4,3);
+    drawnav();
+    
+  }
   player_stats[6][1]=Math.round(player_hp*100)/100;
   player_stats[6][3]=player_regen;
   player_stats[6][2]=player_mhp;
@@ -756,8 +760,43 @@ function tick() {
   document.getElementById("statuses").innerHTML = player_status[3];
   updatestats();
   draweq(30,4,4,3);
+  console.log(fps);
+  document.getElementById("fps").innerHTML = fps
+  fps = 0;
   setTimeout(tick, 1000); //repeat the function
 
+}
+
+function everyframe(){
+  
+  let mx = document.getElementById("x").innerHTML;
+  let my = document.getElementById("y").innerHTML;
+  let hovering = 1;
+  let invlpad = document.getElementById("invlpad").innerHTML;
+  let invtpad = document.getElementById("invtpad").innerHTML;
+  let eqlpad = document.getElementById("eqlpad").innerHTML;
+  let eqtpad = document.getElementById("eqtpad").innerHTML;
+  let b = 4;
+  let d = 30;
+  
+  var c = document.getElementById("inventory");
+  var ctx = c.getContext("2d");
+  let tpad = 0;
+  let lpad = 50;
+  ctx.strokeStyle = "black";
+  ctx.font = "10px Arial";
+  
+  if (mx<389 && mx>50 && my<550 && my>350){
+    drawinv(30,4,6,10)
+    mx = Math.ceil((mx-10-invlpad)/(b+d));
+    my = Math.ceil((my-350-invtpad)/(b+d));
+    hovering = (my-1)*10+mx;
+    ctx.rect((b+d)*mx+b+lpad,(b+d)*my+b+tpad,100,50);
+    ctx.stroke();
+  }
+  
+  fps++
+  setTimeout(everyframe, 20);
 }
 
 function setestats(enemy,level){
@@ -1063,10 +1102,26 @@ function activateButton() {
                   }
                   //nested if statements for checking the effects
                   if (effect_name == "health") {
-                    enemy_stats[6][1] += parseInt(nom);
-                    enemy_stats[6][1] = parseInt(enemy_stats[6][1]*100)/100
-                    if (enemy_stats[6][1] > enemy_stats[6][2]) {//no overflow health
-                      enemy_stats[6][1] = enemy_stats[6][2];
+                    if (player_flags.includes("in combat")) {
+                      enemy_stats[6][1] += parseInt(nom);
+                      enemy_stats[6][1] = parseInt(enemy_stats[6][1]*100)/100
+                      if (enemy_stats[6][1] > enemy_stats[6][2]) {//no overflow health
+                        enemy_stats[6][1] = enemy_stats[6][2];
+                      }
+                      if (enemy_stats[6][1] <= 0) {
+                        enemies_killed++
+                        if (enemies_killed>=enemy_kill_requirement){     
+                       //TODO: figure out what to put here
+                       } else {
+                         startcombat(combat_location,true);
+                         drawdisplay();
+                         document.getElementById("status names").innerHTML = player_status[1];
+                         document.getElementById("statuses").innerHTML = player_status[3];
+                         updatestats();
+                         draweq(30,4,4,3);
+                        }
+                        
+                      }
                     }
                   }//TODO: add more cases for other effects
                   
@@ -1459,6 +1514,7 @@ style="border:1px solid #000000;position:fixed;left:10px;top:50px">
   var ctx = c.getContext("2d");
   draweq(30,4,4,3);
   tick();
+  
   </script>
 </canvas>
 
@@ -1474,6 +1530,7 @@ style="border:1px solid #000000;position:fixed;left:10px;top:350px">
     var c = document.getElementById("inventory");
     var ctx = c.getContext("2d");
     drawinv(30,4,6,10);
+    everyframe();
   </script>
   
 </canvas>
