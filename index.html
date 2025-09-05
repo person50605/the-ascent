@@ -778,27 +778,33 @@ function everyframe(){
   let eqtpad = document.getElementById("eqtpad").innerHTML;
   let b = 4;
   let d = 30;
-  
+
   var c = document.getElementById("inventory");
   var ctx = c.getContext("2d");
-  let tpad = 0;
-  let lpad = 50;
-  ctx.strokeStyle = "black";
-  ctx.font = "10px Arial";
-  
   if (mx<401 && mx>63 && my<558 && my>356){
     ctx.clearRect(0,0,500,500);
-    drawinv(30,4,6,10)
+    drawinv(30,4,6,10);
+    //ctx.clearRect(0,0,500,500);
+    let tpad = 0;
+    let lpad = 50;
+  document.getElementById("invtpad").innerHTML = tpad;
+  document.getElementById("invlpad").innerHTML = lpad;
+  //ctx.clearRect(0, 0, 500, 400);
+  ctx.strokeStyle = "black";
+  ctx.font = "10px Arial";
+    //ctx.clearRect(0,0,500,500);
     mx = Math.ceil((mx-10-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
+    ctx.beginPath();
     ctx.rect((b+d)*mx-20+b+lpad,(b+d)*my-20+b+tpad,100,50);
+    
     ctx.stroke();
     //ctx.clearRect(0,0,500,500);
   }
   
   fps++
-  setTimeout(everyframe, 20);
+  setTimeout(everyframe, 200);
 }
 
 function setestats(enemy,level){
@@ -1241,11 +1247,12 @@ function drawinv(d,b,h,w) {
   //w is the width of the inventory (in boxes) (should be 3)
   var c = document.getElementById("inventory");
   var ctx = c.getContext("2d");
+  
   let tpad = 0;
   let lpad = 50;
   document.getElementById("invtpad").innerHTML = tpad;
   document.getElementById("invlpad").innerHTML = lpad;
-  ctx.clearRect(0, 0, 450, 300);
+  ctx.clearRect(0, 0, 500, 400);
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
       //draw the buttons for scrolling
@@ -1529,8 +1536,8 @@ style="border:1px solid #000000;position:fixed;left:10px;top:350px">
   inventory.addEventListener("mouseenter", updateMousePos);
   inventory.addEventListener("mouseleave", updateMousePos);
   inventory.addEventListener("click", activateButton);
-    var c = document.getElementById("inventory");
-    var ctx = c.getContext("2d");
+    //var c = document.getElementById("inventory");
+    //var ctx = c.getContext("2d");
     drawinv(30,4,6,10);
     everyframe();
   </script>
