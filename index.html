@@ -786,13 +786,15 @@ function everyframe(){
   ctx.strokeStyle = "black";
   ctx.font = "10px Arial";
   
-  if (mx<389 && mx>50 && my<550 && my>350){
+  if (mx<401 && mx>63 && my<558 && my>356){
+    ctx.clearRect(0,0,500,500);
     drawinv(30,4,6,10)
     mx = Math.ceil((mx-10-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
-    ctx.rect((b+d)*mx+b+lpad,(b+d)*my+b+tpad,100,50);
+    ctx.rect((b+d)*mx-20+b+lpad,(b+d)*my-20+b+tpad,100,50);
     ctx.stroke();
+    //ctx.clearRect(0,0,500,500);
   }
   
   fps++
