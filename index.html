@@ -800,7 +800,7 @@ function everyframe(){
     if (inv[1][hovering] != undefined) {
       ctx.beginPath();
       ctx.fillStyle = "gainsboro"
-      ctx.fillRect((b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+b+tpad,d,d);
+      ctx.fillRect((b+d)*(mx-1)+1+b+lpad,(b+d)*(my-1)+1+b+tpad,28,28);
       ctx.fillStyle = "black";
       ctx.fillText(inv[1][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+15+b+tpad)
       ctx.fillText(inv[2][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*my-5+b+tpad)
