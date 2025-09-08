@@ -104,6 +104,16 @@ items = [ ["error"],
 "a small potion that restores your health when imbibed.",
 "a small phial of a liquid that increases your strength",
 "instant death"
+],
+//file name (all lowercase, hyphens for spaces)
+["error",
+"wooden-sword",
+"iron-helmet",
+"wooden-buckler",
+"bread",
+"health-potion",
+"phial-of-strength",
+"ouch-potion"
 ]
 
 
@@ -802,16 +812,20 @@ function everyframe(){
       ctx.fillStyle = "gainsboro"
       ctx.fillRect((b+d)*(mx-1)+1+b+lpad,(b+d)*(my-1)+1+b+tpad,28,28);
       ctx.fillStyle = "black";
+      ctx.textAlign = "left"
       ctx.fillText(inv[1][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+15+b+tpad)
       ctx.fillText(inv[2][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*my-5+b+tpad)
-      ctx.fillRect((b+d)*mx-18+b+lpad,(b+d)*my-23+b+tpad,106,56);
+      ctx.fillRect((b+d)*mx-18+b+lpad,(b+d)*my-23+b+tpad,156,106);
       ctx.fillStyle = "grey";
-      ctx.fillRect((b+d)*mx-15+b+lpad,(b+d)*my-20+b+tpad,100,50);
+      ctx.fillRect((b+d)*mx-15+b+lpad,(b+d)*my-20+b+tpad,150,100);
       ctx.fillStyle = "black"
       ctx.fillText(inv[1][hovering],(b+d)*mx-15+b+lpad,(b+d)*my-10+b+tpad)
+      ctx.textAlign = "right"
+      ctx.fillText("owned: "+inv[2][hovering],(b+d)*mx+134+b+lpad,(b+d)*my-10+b+tpad)
       ctx.stroke();
       ctx.fillStyle = "black"
     }
+    ctx.textAlign = "left"
     //ctx.clearRect(0,0,500,500);
     
   }
@@ -892,7 +906,11 @@ function startcombat(area,continuing) {
   drawdisplay(enemy);
 }
 
-
+function loadimage(image,x,y,area){
+  var c = document.getElementById(area);
+  var ctx = c.getContext("2d")
+  ctx.drawImage("/images/"+image+".png");
+}
 
 function activateButton() {
   //TODO: redraw the inv & eq on page load to saturate the last boxes
@@ -1297,6 +1315,7 @@ function drawinv(d,b,h,w) {
       //TODO: make this code load an image instead of text
       if (inv [1] [n*10+i+1] != undefined) {
       ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
+      loadimage("health-potion",(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
       }
       ctx.stroke();
     }
