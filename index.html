@@ -790,7 +790,7 @@ function everyframe(){
   document.getElementById("invtpad").innerHTML = tpad;
   document.getElementById("invlpad").innerHTML = lpad;
   //ctx.clearRect(0, 0, 500, 400);
-  ctx.fillStyle = "black";
+  
   ctx.font = "10px Arial";
   
     //ctx.clearRect(0,0,500,500);
@@ -799,6 +799,11 @@ function everyframe(){
     hovering = (my-1)*10+mx;
     if (inv[1][hovering] != undefined) {
       ctx.beginPath();
+      ctx.fillStyle = "gainsboro"
+      ctx.fillRect((b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+b+tpad,d,d);
+      ctx.fillStyle = "black";
+      ctx.fillText(inv[1][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+15+b+tpad)
+      ctx.fillText(inv[2][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*my-5+b+tpad)
       ctx.fillRect((b+d)*mx-18+b+lpad,(b+d)*my-23+b+tpad,106,56);
       ctx.fillStyle = "grey";
       ctx.fillRect((b+d)*mx-15+b+lpad,(b+d)*my-20+b+tpad,100,50);
@@ -808,6 +813,7 @@ function everyframe(){
       ctx.fillStyle = "black"
     }
     //ctx.clearRect(0,0,500,500);
+    
   }
   
   fps++
