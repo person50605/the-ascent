@@ -792,21 +792,21 @@ function everyframe(){
   var c = document.getElementById("inventory");
   var ctx = c.getContext("2d");
   if (mx<401 && mx>63 && my<558 && my>356){
-    ctx.clearRect(0,0,500,500);
-    drawinv(30,4,6,10);
+      ctx.clearRect(0,0,500,500);
+      drawinv(30,4,6,10);
     //ctx.clearRect(0,0,500,500);
     let tpad = 0;
     let lpad = 50;
   document.getElementById("invtpad").innerHTML = tpad;
   document.getElementById("invlpad").innerHTML = lpad;
   //ctx.clearRect(0, 0, 500, 400);
-  
   ctx.font = "10px Arial";
   
     //ctx.clearRect(0,0,500,500);
     mx = Math.ceil((mx-10-invlpad)/(b+d));
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
+    
     if (inv[1][hovering] != undefined) {
       ctx.beginPath();
       ctx.fillStyle = "gainsboro"
@@ -831,7 +831,7 @@ function everyframe(){
   }
   
   fps++
-  setTimeout(everyframe, 20);
+  setTimeout(everyframe, 30);
 }
 
 function setestats(enemy,level){
@@ -906,13 +906,13 @@ function startcombat(area,continuing) {
   drawdisplay(enemy);
 }
 
-function loadimage(image,x,y,area){
-  var c = document.getElementById("inventory");
+function loadimage(image,x,y,dx,dy,area){
+  var c = document.getElementById(area);
   var ctx = c.getContext("2d")
   let img = new Image();
 
   img.onload = () => {
-    ctx.drawImage(img,0,0);
+    ctx.drawImage(img,x,y,dx,dy);
   };
   img.src = "https://github.com/person50605/the-ascent/blob/main/images/"+image+".png?raw=true"
 }
@@ -1319,8 +1319,8 @@ function drawinv(d,b,h,w) {
       //add the item name
       //TODO: make this code load an image instead of text
       if (inv [1] [n*10+i+1] != undefined) {
-      ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
-      loadimage("health-potion",(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
+      //ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
+      loadimage("health-potion",(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+tpad,d,d,"inventory");
       }
       ctx.stroke();
     }
