@@ -23,7 +23,7 @@
   <div id="status names"> helloo</div>
   <div id="statuses"> helllo</div>
   <div id="fps">fps: </div>
-  <img src="https://github.com/person50605/the-ascent/blob/main/images/health-potion.png"></img>
+  <!-- <img src="https://github.com/person50605/the-ascent/blob/main/images/health-potion.png">hi</img> -->
 
 
 <!-- functions and vars -->
@@ -31,7 +31,6 @@
 //vars
 
 //I like my arrays to start at 1, so there's a placeholder "error" at the start of each one
-
 
 
 
@@ -910,7 +909,12 @@ function startcombat(area,continuing) {
 function loadimage(image,x,y,area){
   var c = document.getElementById("inventory");
   var ctx = c.getContext("2d")
-  //ctx.drawImage("https://github.com/person50605/the-ascent/blob/main/images/health-potion.png");
+  let img = new Image();
+
+  img.onload = () => {
+    ctx.drawImage(img,0,0);
+  };
+  img.src = "https://github.com/person50605/the-ascent/blob/main/images/"+image+".png?raw=true"
 }
 
 function activateButton() {
