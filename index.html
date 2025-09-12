@@ -94,7 +94,8 @@ items = [ ["error"],
 "bread",
 "health potion",
 "phial of strength",
-"ouch potion"],
+"ouch potion",
+"scroll of fireball"],
 //descriptions
 ["error",
 "A wooden sword",
@@ -103,7 +104,8 @@ items = [ ["error"],
 "a loaf of bread",
 "a small potion that restores your health when imbibed.",
 "a small phial of a liquid that increases your strength",
-"instant death"
+"instant death",
+"a single-use scroll that allows you to cast fireball"
 ],
 //file name (all lowercase, hyphens for spaces)
 ["error",
@@ -113,7 +115,8 @@ items = [ ["error"],
 "bread",
 "health-potion",
 "phial-of-strength",
-"ouch-potion"
+"ouch-potion",
+"fireball-scroll"
 ]
 
 
@@ -336,7 +339,6 @@ enemies_killed = 0
 enemy_kill_requirement = 0
   
 fps = 0;
-test = false
   
 //declare functions
 
@@ -807,9 +809,6 @@ function everyframe(){
     my = Math.ceil((my-350-invtpad)/(b+d));
     hovering = (my-1)*10+mx;
     
-      
-    
-    
     if (inv[1][hovering] != undefined) {
       ctx.beginPath();
       ctx.fillStyle = "gainsboro"
@@ -834,7 +833,8 @@ function everyframe(){
   }
   
   fps++
-  setTimeout(everyframe, 200);
+  document.getElementById("fps").innerHTML = fps
+  setTimeout(everyframe, 500);
 }
 
 function setestats(enemy,level){
@@ -909,16 +909,16 @@ function startcombat(area,continuing) {
   drawdisplay(enemy);
 }
 
-function loadimage(image,x,y,dx,dy,area){
+function loadimage(image,px,py,dx,dy,area){
   var c = document.getElementById(area);
   var ctx = c.getContext("2d")
   let img = new Image();
 
   img.onload = () => {
-    ctx.drawImage(img,x,y,dx,dy);
+    ctx.drawImage(img,px,py-15,dx,dy);
   };
   img.src = "https://github.com/person50605/the-ascent/blob/main/images/"+image+".png?raw=true"
-  test = true
+  console.log(img.src)
   
 }
 
@@ -1325,7 +1325,7 @@ function drawinv(d,b,h,w) {
       //TODO: make this code load an image instead of text
       if (inv [1] [n*10+i+1] != undefined) {
       //ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
-      loadimage("health-potion",(b+d)*(i+1)-d+lpad, (b+d)*n+b+tpad,d,d,"inventory");
+      loadimage(inv[3][n*10+i+1],(b+d)*(i+1)-d+lpad, (b+d)*n+b-15+tpad,d,d,"inventory");
       }
       ctx.stroke();
     }
