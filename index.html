@@ -111,14 +111,14 @@ items = [ ["error"],
 ],
 //file name (all lowercase, hyphens for spaces)
 ["error",
-"wooden_sword",
-"iron_helmet",
-"wooden_buckler",
+"woodenSword",
+"ironHelmet",
+"woodenBuckler",
 "bread",
-"health_potion",
-"phial_of_strength",
-"ouch_potion",
-"fireball_scroll",
+"healthPotion",
+"phialOfStrength",
+"ouchPotion",
+"fireballScroll",
 "test"
 ]
 
@@ -1328,7 +1328,11 @@ function drawinv(d,b,h,w) {
       //TODO: make this code load an image instead of text
       if (inv [1] [n*10+i+1] != undefined) {
       //ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
-      loadimage(inv[3][n*10+i+1],(b+d)*(i+1)-d+lpad, (b+d)*n+b-15+tpad,d,d,"inventory");
+        let j=0
+        for (j = 0; inv[1][n*10+i+1] != items[1][j] && j<=100;j++){
+          
+        }
+      loadimage(items[3][j],(b+d)*(i+1)-d+lpad, ((b+d)*n+b-15+tpad),d,d,"inventory");
       }
       ctx.stroke();
     }
