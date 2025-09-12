@@ -111,14 +111,14 @@ items = [ ["error"],
 ],
 //file name (all lowercase, hyphens for spaces)
 ["error",
-"woodenSword",
-"ironHelmet",
-"woodenBuckler",
+"wooden_sword",
+"iron_helmet",
+"wooden_buckler",
 "bread",
-"healthPotion",
-"phialOfStrength",
-"ouchPotion",
-"fireballScroll",
+"health_potion",
+"phial_of_strength",
+"ouch_potion",
+"fireball_scroll",
 "test"
 ]
 
@@ -818,8 +818,9 @@ function everyframe(){
       ctx.fillRect((b+d)*(mx-1)+1+b+lpad,(b+d)*(my-1)+1+b+tpad,28,28);
       ctx.fillStyle = "black";
       ctx.textAlign = "left"
-      loadimage(inv[1][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+15+b+tpad,d,d,"inventory")
+      //loadimage(inv[1][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*(my-1)+b+tpad,d,d,"inventory");
       ctx.fillText(inv[2][hovering],(b+d)*(mx-1)+b+lpad,(b+d)*my-5+b+tpad)
+
       ctx.fillRect((b+d)*mx-18+b+lpad,(b+d)*my-23+b+tpad,156,106);
       ctx.fillStyle = "grey";
       ctx.fillRect((b+d)*mx-15+b+lpad,(b+d)*my-20+b+tpad,150,100);
@@ -827,17 +828,40 @@ function everyframe(){
       ctx.fillText(inv[1][hovering],(b+d)*mx-15+b+lpad,(b+d)*my-10+b+tpad)
       ctx.textAlign = "right"
       ctx.fillText("owned: "+inv[2][hovering],(b+d)*mx+134+b+lpad,(b+d)*my-10+b+tpad)
+      ctx.textAlign = "left"
+      
+      
+      let i = 0
+      let lines = 1
+      for (i = 0;inv[1][hovering] != items[1][i] && i<=100;i++){}
+      let footxt = items[2][i]
+      if (items[2][i] != undefined) {
+
+      for (i = 0;i<=footxt.length && i<100;i+=0){
+        let linetxt = ""
+        
+        for (let j = i;j<=footxt.length && (j-10*lines)<10;j++){
+          linetxt = linetxt+footxt[j]
+          i++
+        }
+        
+        ctx.fillText(linetxt,(b+d)*(mx)-15*lines+b+lpad,(b+d)*my+b+tpad);
+        lines++
+      }
+      
+      }
+      
       ctx.stroke();
-      ctx.fillStyle = "black"
     }
     ctx.textAlign = "left"
+    ctx.fillStyle = "black"
     //ctx.clearRect(0,0,500,500);
     
   }
   
   fps++
   document.getElementById("fps").innerHTML = fps
-  setTimeout(everyframe, 500);
+  setTimeout(everyframe, 300);
 }
 
 function setestats(enemy,level){
@@ -918,7 +942,7 @@ function loadimage(image,px,py,dx,dy,area){
   let img = new Image();
 
   img.onload = () => {
-    ctx.drawImage(img,px,py-15,dx,dy);
+    ctx.drawImage(img,px,py,dx,dy);
   };
   img.src = "https://github.com/person50605/the-ascent/blob/main/images/"+image+".png?raw=true"
   console.log(img.src)
@@ -1329,10 +1353,8 @@ function drawinv(d,b,h,w) {
       if (inv [1] [n*10+i+1] != undefined) {
       //ctx.fillText(inv [1] [n*10+i+1],(b+d)*(i+1)-d+2+lpad, (b+d)*n+b+d/2+tpad);
         let j=0
-        for (j = 0; inv[1][n*10+i+1] != items[1][j] && j<=100;j++){
-          
-        }
-      loadimage(items[3][j],(b+d)*(i+1)-d+lpad, ((b+d)*n+b-15+tpad),d,d,"inventory");
+        for (j = 0; inv[1][n*10+i+1] != items[1][j] && j<=1000;j++){} //find item in index
+      loadimage(items[3][j],(b+d)*(i+1)-d+lpad, ((b+d)*n+b+tpad),d,d,"inventory");
       }
       ctx.stroke();
     }
